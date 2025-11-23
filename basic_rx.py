@@ -210,7 +210,7 @@ class basic_rx(gr.top_block, Qt.QWidget):
         	audio_rate=int(48e3),
         	quad_rate=int(48e3),
         	tau=(75e-6),
-        	max_dev=int(10e3),
+        	max_dev=int(5e3),
           )
 
 
