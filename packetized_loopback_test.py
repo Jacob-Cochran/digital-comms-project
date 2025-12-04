@@ -5,14 +5,13 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: pkt_rcv_gr38
-# Author: Barry Duggan
-# Description: packet receive (for GNURadio 3.8)
+# Title: Not titled yet
 # GNU Radio version: 3.10.12.0
 
 from PyQt5 import Qt
 from gnuradio import qtgui
 from gnuradio import blocks
+import pmt
 from gnuradio import blocks, gr
 from gnuradio import digital
 from gnuradio import filter
@@ -27,18 +26,19 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio import gr, pdu
 from gnuradio import pdu
-from gnuradio import zeromq
+import numpy
+import packetized_loopback_test_packet_format_gr38 as packet_format_gr38  # embedded python block
 import sip
 import threading
 
 
 
-class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
+class packetized_loopback_test(gr.top_block, Qt.QWidget):
 
     def __init__(self):
-        gr.top_block.__init__(self, "pkt_rcv_gr38", catch_exceptions=True)
+        gr.top_block.__init__(self, "Not titled yet", catch_exceptions=True)
         Qt.QWidget.__init__(self)
-        self.setWindowTitle("pkt_rcv_gr38")
+        self.setWindowTitle("Not titled yet")
         qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
@@ -56,7 +56,7 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
         self.top_grid_layout = Qt.QGridLayout()
         self.top_layout.addLayout(self.top_grid_layout)
 
-        self.settings = Qt.QSettings("gnuradio/flowgraphs", "pkt_rcv_gr38")
+        self.settings = Qt.QSettings("gnuradio/flowgraphs", "packetized_loopback_test")
 
         try:
             geometry = self.settings.value("geometry")
@@ -73,8 +73,9 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
         self.thresh = thresh = 1
         self.sps = sps = 2
         self.samp_rate = samp_rate = int(4e5)
-        self.rs_ratio = rs_ratio = 1.0
+        self.rs_ratio = rs_ratio = 1.040
         self.phase_bw = phase_bw = 0.0628
+        self.packet_length = packet_length = 188
         self.order = order = 2
         self.excess_bw = excess_bw = 0.35
         self.bpsk = bpsk = digital.constellation_bpsk().base()
@@ -84,11 +85,61 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
         # Blocks
         ##################################################
 
-        self.zeromq_sub_source_0 = zeromq.sub_source(gr.sizeof_gr_complex, 1, 'tcp://127.0.0.1:49203', 100, False, (-1), '', False)
-        self.qtgui_time_sink_x_0 = qtgui.time_sink_c(
+        self.qtgui_time_sink_x_0_0 = qtgui.time_sink_c(
             1024, #size
             samp_rate, #samp_rate
             "", #name
+            1, #number of inputs
+            None # parent
+        )
+        self.qtgui_time_sink_x_0_0.set_update_time(0.10)
+        self.qtgui_time_sink_x_0_0.set_y_axis(-1, 1)
+
+        self.qtgui_time_sink_x_0_0.set_y_label('Amplitude', "")
+
+        self.qtgui_time_sink_x_0_0.enable_tags(True)
+        self.qtgui_time_sink_x_0_0.set_trigger_mode(qtgui.TRIG_MODE_NORM, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "packet_len")
+        self.qtgui_time_sink_x_0_0.enable_autoscale(False)
+        self.qtgui_time_sink_x_0_0.enable_grid(False)
+        self.qtgui_time_sink_x_0_0.enable_axis_labels(True)
+        self.qtgui_time_sink_x_0_0.enable_control_panel(True)
+        self.qtgui_time_sink_x_0_0.enable_stem_plot(False)
+
+
+        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
+            'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
+        widths = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        colors = ['blue', 'red', 'green', 'black', 'cyan',
+            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
+        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0, 1.0, 1.0]
+        styles = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        markers = [-1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1]
+
+
+        for i in range(2):
+            if len(labels[i]) == 0:
+                if (i % 2 == 0):
+                    self.qtgui_time_sink_x_0_0.set_line_label(i, "Re{{Data {0}}}".format(i/2))
+                else:
+                    self.qtgui_time_sink_x_0_0.set_line_label(i, "Im{{Data {0}}}".format(i/2))
+            else:
+                self.qtgui_time_sink_x_0_0.set_line_label(i, labels[i])
+            self.qtgui_time_sink_x_0_0.set_line_width(i, widths[i])
+            self.qtgui_time_sink_x_0_0.set_line_color(i, colors[i])
+            self.qtgui_time_sink_x_0_0.set_line_style(i, styles[i])
+            self.qtgui_time_sink_x_0_0.set_line_marker(i, markers[i])
+            self.qtgui_time_sink_x_0_0.set_line_alpha(i, alphas[i])
+
+        self._qtgui_time_sink_x_0_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0_0.qwidget(), Qt.QWidget)
+        self.top_layout.addWidget(self._qtgui_time_sink_x_0_0_win)
+        self.qtgui_time_sink_x_0 = qtgui.time_sink_c(
+            1024, #size
+            samp_rate, #samp_rate
+            "Transmitted Sampled Constellation", #name
             1, #number of inputs
             None # parent
         )
@@ -98,11 +149,11 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
         self.qtgui_time_sink_x_0.enable_tags(True)
-        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_NORM, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "packet_len")
+        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_TAG, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "packet_len")
         self.qtgui_time_sink_x_0.enable_autoscale(False)
         self.qtgui_time_sink_x_0.enable_grid(False)
         self.qtgui_time_sink_x_0.enable_axis_labels(True)
-        self.qtgui_time_sink_x_0.enable_control_panel(True)
+        self.qtgui_time_sink_x_0.enable_control_panel(False)
         self.qtgui_time_sink_x_0.enable_stem_plot(False)
 
 
@@ -178,8 +229,10 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
         self._qtgui_const_sink_x_0_win = sip.wrapinstance(self.qtgui_const_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_const_sink_x_0_win)
         self.pdu_tagged_stream_to_pdu_1 = pdu.tagged_stream_to_pdu(gr.types.byte_t, 'packet_len')
-        self.pdu_pdu_to_stream_x_0 = pdu.pdu_to_stream_b(pdu.EARLY_BURST_APPEND, 50)
-        self.mmse_resampler_xx_0 = filter.mmse_resampler_cc(0, (((usrp_rate/samp_rate)*rs_ratio)))
+        self.pdu_tagged_stream_to_pdu_0 = pdu.tagged_stream_to_pdu(gr.types.byte_t, 'packet_len')
+        self.pdu_pdu_to_tagged_stream_0 = pdu.pdu_to_tagged_stream(gr.types.byte_t, 'packet_len')
+        self.pdu_pdu_to_stream_x_0 = pdu.pdu_to_stream_b(pdu.EARLY_BURST_DROP, 2048)
+        self.packet_format_gr38 = packet_format_gr38.blk()
         self.digital_symbol_sync_xx_0 = digital.symbol_sync_cc(
             digital.TED_MUELLER_AND_MULLER,
             sps,
@@ -195,13 +248,26 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
         self.digital_map_bb_0 = digital.map_bb([0,1])
         self.digital_diff_decoder_bb_0 = digital.diff_decoder_bb(2, digital.DIFF_DIFFERENTIAL)
         self.digital_crc_check_0 = digital.crc_check(32, 0x4C11DB7, 0xFFFFFFFF, 0xFFFFFFFF, True, True, False, True, 0)
+        self.digital_crc_append_0 = digital.crc_append(32, 0x4C11DB7, 0xFFFFFFFF, 0xFFFFFFFF, True, True, False, 0)
         self.digital_costas_loop_cc_0 = digital.costas_loop_cc(phase_bw, order, False)
         self.digital_correlate_access_code_xx_ts_0 = digital.correlate_access_code_bb_ts("11100001010110101110100010010011",
           thresh, 'packet_len')
+        self.digital_constellation_modulator_0 = digital.generic_mod(
+            constellation=bpsk,
+            differential=True,
+            samples_per_symbol=sps,
+            pre_diff_code=True,
+            excess_bw=excess_bw,
+            verbose=False,
+            log=False,
+            truncate=False)
         self.digital_constellation_decoder_cb_0 = digital.constellation_decoder_cb(bpsk)
-        self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_gr_complex*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
+        self.blocks_throttle2_0_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
+        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_length, "packet_len")
         self.blocks_repack_bits_bb_1 = blocks.repack_bits_bb(1, 8, "packet_len", False, gr.GR_MSB_FIRST)
         self.blocks_message_debug_0 = blocks.message_debug(True, gr.log_levels.info)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/jcochran/comms/test_video/mp4sample.ts', True, 0, 0)
+        self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
         self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, '/tmp/test.ts', False)
         self.blocks_file_sink_0_0.set_unbuffered(False)
 
@@ -209,26 +275,32 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
         ##################################################
         # Connections
         ##################################################
+        self.msg_connect((self.digital_crc_append_0, 'out'), (self.packet_format_gr38, 'PDU_in'))
         self.msg_connect((self.digital_crc_check_0, 'fail'), (self.blocks_message_debug_0, 'print'))
         self.msg_connect((self.digital_crc_check_0, 'ok'), (self.pdu_pdu_to_stream_x_0, 'pdus'))
+        self.msg_connect((self.packet_format_gr38, 'PDU_out0'), (self.pdu_pdu_to_tagged_stream_0, 'pdus'))
+        self.msg_connect((self.pdu_tagged_stream_to_pdu_0, 'pdus'), (self.digital_crc_append_0, 'in'))
         self.msg_connect((self.pdu_tagged_stream_to_pdu_1, 'pdus'), (self.digital_crc_check_0, 'in'))
+        self.connect((self.blocks_file_source_0, 0), (self.blocks_throttle2_0_0, 0))
         self.connect((self.blocks_repack_bits_bb_1, 0), (self.pdu_tagged_stream_to_pdu_1, 0))
-        self.connect((self.blocks_throttle2_0, 0), (self.digital_symbol_sync_xx_0, 0))
+        self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.pdu_tagged_stream_to_pdu_0, 0))
+        self.connect((self.blocks_throttle2_0_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_diff_decoder_bb_0, 0))
+        self.connect((self.digital_constellation_modulator_0, 0), (self.digital_symbol_sync_xx_0, 0))
+        self.connect((self.digital_constellation_modulator_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0, 0), (self.blocks_repack_bits_bb_1, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_constellation_decoder_cb_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_0, 0))
         self.connect((self.digital_diff_decoder_bb_0, 0), (self.digital_map_bb_0, 0))
         self.connect((self.digital_map_bb_0, 0), (self.digital_correlate_access_code_xx_ts_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_costas_loop_cc_0, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_time_sink_x_0, 0))
-        self.connect((self.mmse_resampler_xx_0, 0), (self.blocks_throttle2_0, 0))
+        self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_time_sink_x_0_0, 0))
         self.connect((self.pdu_pdu_to_stream_x_0, 0), (self.blocks_file_sink_0_0, 0))
-        self.connect((self.zeromq_sub_source_0, 0), (self.mmse_resampler_xx_0, 0))
+        self.connect((self.pdu_pdu_to_tagged_stream_0, 0), (self.digital_constellation_modulator_0, 0))
 
 
     def closeEvent(self, event):
-        self.settings = Qt.QSettings("gnuradio/flowgraphs", "pkt_rcv_gr38")
+        self.settings = Qt.QSettings("gnuradio/flowgraphs", "packetized_loopback_test")
         self.settings.setValue("geometry", self.saveGeometry())
         self.stop()
         self.wait()
@@ -240,7 +312,6 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
 
     def set_usrp_rate(self, usrp_rate):
         self.usrp_rate = usrp_rate
-        self.mmse_resampler_xx_0.set_resamp_ratio((((self.usrp_rate/self.samp_rate)*self.rs_ratio)))
 
     def get_thresh(self):
         return self.thresh
@@ -260,16 +331,15 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
-        self.mmse_resampler_xx_0.set_resamp_ratio((((self.usrp_rate/self.samp_rate)*self.rs_ratio)))
+        self.blocks_throttle2_0_0.set_sample_rate(self.samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
+        self.qtgui_time_sink_x_0_0.set_samp_rate(self.samp_rate)
 
     def get_rs_ratio(self):
         return self.rs_ratio
 
     def set_rs_ratio(self, rs_ratio):
         self.rs_ratio = rs_ratio
-        self.mmse_resampler_xx_0.set_resamp_ratio((((self.usrp_rate/self.samp_rate)*self.rs_ratio)))
 
     def get_phase_bw(self):
         return self.phase_bw
@@ -278,6 +348,14 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
         self.phase_bw = phase_bw
         self.digital_costas_loop_cc_0.set_loop_bandwidth(self.phase_bw)
         self.digital_symbol_sync_xx_0.set_loop_bandwidth(self.phase_bw)
+
+    def get_packet_length(self):
+        return self.packet_length
+
+    def set_packet_length(self, packet_length):
+        self.packet_length = packet_length
+        self.blocks_stream_to_tagged_stream_0.set_packet_len(self.packet_length)
+        self.blocks_stream_to_tagged_stream_0.set_packet_len_pmt(self.packet_length)
 
     def get_order(self):
         return self.order
@@ -301,7 +379,7 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
 
 
 
-def main(top_block_cls=pkt_rcv_gr38, options=None):
+def main(top_block_cls=packetized_loopback_test, options=None):
 
     qapp = Qt.QApplication(sys.argv)
 

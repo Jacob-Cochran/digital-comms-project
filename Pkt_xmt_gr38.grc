@@ -65,6 +65,18 @@ blocks:
     coordinate: [272, 76.0]
     rotation: 0
     state: enabled
+- name: packet_length
+  id: variable
+  parameters:
+    comment: ''
+    value: '188'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [688, 12.0]
+    rotation: 0
+    state: true
 - name: rs_ratio
   id: variable
   parameters:
@@ -81,7 +93,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '48000'
+    value: int(4e5)
   states:
     bus_sink: false
     bus_source: false
@@ -105,7 +117,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '768000'
+    value: int(1e6)
   states:
     bus_sink: false
     bus_source: false
@@ -113,6 +125,28 @@ blocks:
     coordinate: [184, 76.0]
     rotation: 0
     state: true
+- name: blocks_file_source_0
+  id: blocks_file_source
+  parameters:
+    affinity: ''
+    alias: ''
+    begin_tag: pmt.PMT_NIL
+    comment: ''
+    file: /home/jcochran/comms/test_video/mp4sample.ts
+    length: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    repeat: 'True'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [152, 212.0]
+    rotation: 0
+    state: enabled
 - name: blocks_message_strobe_0
   id: blocks_message_strobe
   parameters:
@@ -129,7 +163,7 @@ blocks:
     bus_structure: null
     coordinate: [432, 364.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_multiply_const_vxx_0
   id: blocks_multiply_const_vxx
   parameters:
@@ -148,6 +182,25 @@ blocks:
     coordinate: [752, 484.0]
     rotation: 0
     state: true
+- name: blocks_stream_to_tagged_stream_0
+  id: blocks_stream_to_tagged_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    len_tag_key: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    packet_len: packet_length
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [592, 236.0]
+    rotation: 0
+    state: enabled
 - name: blocks_throttle2_0
   id: blocks_throttle2
   parameters:
@@ -169,6 +222,29 @@ blocks:
     coordinate: [560, 476.0]
     rotation: 0
     state: enabled
+- name: blocks_throttle2_0_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Rate limits the the file source
+
+      so that it doesn''t overload'
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [408, 236.0]
+    rotation: 0
+    state: enabled
 - name: digital_constellation_modulator_0
   id: digital_constellation_modulator
   parameters:
@@ -188,7 +264,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1608, 340.0]
+    coordinate: [2008, 332.0]
     rotation: 0
     state: enabled
 - name: digital_crc_append_0
@@ -211,7 +287,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [720, 372.0]
+    coordinate: [1120, 364.0]
     rotation: 0
     state: enabled
 - name: import_0
@@ -279,7 +355,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1040, 376.0]
+    coordinate: [1440, 368.0]
     rotation: 0
     state: true
 - name: pdu_pdu_to_tagged_stream_0
@@ -296,7 +372,24 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1336, 364.0]
+    coordinate: [1736, 356.0]
+    rotation: 0
+    state: enabled
+- name: pdu_tagged_stream_to_pdu_0
+  id: pdu_tagged_stream_to_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 244.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -406,7 +499,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1888, 364.0]
+    coordinate: [2288, 356.0]
     rotation: 0
     state: true
 - name: virtual_source_0
@@ -446,15 +539,19 @@ blocks:
     state: true
 
 connections:
+- [blocks_file_source_0, '0', blocks_throttle2_0_0, '0']
 - [blocks_message_strobe_0, strobe, digital_crc_append_0, in]
 - [blocks_multiply_const_vxx_0, '0', mmse_resampler_xx_0, '0']
 - [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_stream_to_tagged_stream_0, '0', pdu_tagged_stream_to_pdu_0, '0']
 - [blocks_throttle2_0, '0', blocks_multiply_const_vxx_0, '0']
+- [blocks_throttle2_0_0, '0', blocks_stream_to_tagged_stream_0, '0']
 - [digital_constellation_modulator_0, '0', virtual_sink_0, '0']
 - [digital_crc_append_0, out, packet_format_gr38, PDU_in]
 - [mmse_resampler_xx_0, '0', zeromq_pub_sink_0, '0']
 - [packet_format_gr38, PDU_out0, pdu_pdu_to_tagged_stream_0, pdus]
 - [pdu_pdu_to_tagged_stream_0, '0', digital_constellation_modulator_0, '0']
+- [pdu_tagged_stream_to_pdu_0, pdus, digital_crc_append_0, in]
 - [virtual_source_0, '0', blocks_throttle2_0, '0']
 
 metadata:
