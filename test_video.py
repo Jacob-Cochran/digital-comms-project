@@ -68,7 +68,9 @@ class test_video(gr.top_block, Qt.QWidget):
         ##################################################
         self.access_key = access_key = '11100001010110101110100010010011'
         self.samp_rate = samp_rate = int(1e6)
+        self.payload_mod = payload_mod = digital.constellation_qpsk()
         self.packet_length = packet_length = int(188)
+        self.header_mod = header_mod = digital.constellation_qpsk()
         self.hdr_format = hdr_format = digital.header_format_default(access_key, 0)
         self.frame_sync_cols = frame_sync_cols = 50
 
@@ -76,7 +78,7 @@ class test_video(gr.top_block, Qt.QWidget):
         # Blocks
         ##################################################
 
-        self._frame_sync_cols_range = qtgui.Range(0, 2048, 1, 50, 200)
+        self._frame_sync_cols_range = qtgui.Range(0, 12000, 1, 50, 200)
         self._frame_sync_cols_win = qtgui.RangeWidget(self._frame_sync_cols_range, self.set_frame_sync_cols, "'frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._frame_sync_cols_win)
         self.qtgui_time_sink_x_0_2 = qtgui.time_sink_f(
@@ -220,18 +222,65 @@ class test_video(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_raster_sink_x_0_win = sip.wrapinstance(self.qtgui_time_raster_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_raster_sink_x_0_win)
+        self.qtgui_const_sink_x_0 = qtgui.const_sink_c(
+            1024, #size
+            "", #name
+            1, #number of inputs
+            None # parent
+        )
+        self.qtgui_const_sink_x_0.set_update_time(0.10)
+        self.qtgui_const_sink_x_0.set_y_axis((-2), 2)
+        self.qtgui_const_sink_x_0.set_x_axis((-2), 2)
+        self.qtgui_const_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, "")
+        self.qtgui_const_sink_x_0.enable_autoscale(False)
+        self.qtgui_const_sink_x_0.enable_grid(False)
+        self.qtgui_const_sink_x_0.enable_axis_labels(True)
+
+
+        labels = ['', '', '', '', '',
+            '', '', '', '', '']
+        widths = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        colors = ["blue", "red", "green", "black", "cyan",
+            "magenta", "yellow", "dark red", "dark green", "dark blue"]
+        styles = [0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0]
+        markers = [0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0]
+        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0, 1.0, 1.0]
+
+        for i in range(1):
+            if len(labels[i]) == 0:
+                self.qtgui_const_sink_x_0.set_line_label(i, "Data {0}".format(i))
+            else:
+                self.qtgui_const_sink_x_0.set_line_label(i, labels[i])
+            self.qtgui_const_sink_x_0.set_line_width(i, widths[i])
+            self.qtgui_const_sink_x_0.set_line_color(i, colors[i])
+            self.qtgui_const_sink_x_0.set_line_style(i, styles[i])
+            self.qtgui_const_sink_x_0.set_line_marker(i, markers[i])
+            self.qtgui_const_sink_x_0.set_line_alpha(i, alphas[i])
+
+        self._qtgui_const_sink_x_0_win = sip.wrapinstance(self.qtgui_const_sink_x_0.qwidget(), Qt.QWidget)
+        self.top_layout.addWidget(self._qtgui_const_sink_x_0_win)
         self.digital_protocol_formatter_bb_0 = digital.protocol_formatter_bb(hdr_format, "packet_len")
         self.digital_crc32_bb_0_0 = digital.crc32_bb(True, "packet_len", True)
         self.digital_crc32_bb_0 = digital.crc32_bb(False, "packet_len", True)
         self.digital_correlate_access_code_xx_ts_0 = digital.correlate_access_code_bb_ts(access_key,
           0, 'packet_len')
+        self.digital_constellation_decoder_cb_0 = digital.constellation_decoder_cb(header_mod)
+        self.digital_chunks_to_symbols_xx_0_1 = digital.chunks_to_symbols_bc(header_mod.points(), 1)
+        self.digital_chunks_to_symbols_xx_0_0 = digital.chunks_to_symbols_bc(payload_mod.points(), 1)
+        self.blocks_unpacked_to_packed_xx_0 = blocks.unpacked_to_packed_bb(payload_mod.bits_per_symbol(), gr.GR_LSB_FIRST)
         self.blocks_uchar_to_float_0_0_0 = blocks.uchar_to_float()
         self.blocks_uchar_to_float_0_0 = blocks.uchar_to_float()
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
-        self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, 'packet_len', 0)
+        self.blocks_tagged_stream_mux_0_0 = blocks.tagged_stream_mux(gr.sizeof_gr_complex*1, "packet_len", 0)
         self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_length, "packet_len")
         self.blocks_repack_bits_bb_1_0 = blocks.repack_bits_bb(1, 8, "packet_len", False, gr.GR_MSB_FIRST)
-        self.blocks_repack_bits_bb_1 = blocks.repack_bits_bb(8, 1, "packet_len", False, gr.GR_MSB_FIRST)
+        self.blocks_repack_bits_bb_1 = blocks.repack_bits_bb(1, 8, "packet_len", False, gr.GR_LSB_FIRST)
+        self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, header_mod.bits_per_symbol(), "packet_len", False, gr.GR_LSB_FIRST)
+        self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(8, payload_mod.bits_per_symbol(), "packet_len", False, gr.GR_LSB_FIRST)
         self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/jcochran/comms/test_video/mp4sample.ts', True, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/tmp/test.ts', False)
@@ -242,21 +291,28 @@ class test_video(gr.top_block, Qt.QWidget):
         # Connections
         ##################################################
         self.connect((self.blocks_file_source_0, 0), (self.blocks_throttle2_0, 0))
+        self.connect((self.blocks_repack_bits_bb_0, 0), (self.digital_chunks_to_symbols_xx_0_0, 0))
+        self.connect((self.blocks_repack_bits_bb_0_0, 0), (self.digital_chunks_to_symbols_xx_0_1, 0))
         self.connect((self.blocks_repack_bits_bb_1, 0), (self.blocks_uchar_to_float_0_0, 0))
         self.connect((self.blocks_repack_bits_bb_1, 0), (self.digital_correlate_access_code_xx_ts_0, 0))
         self.connect((self.blocks_repack_bits_bb_1, 0), (self.qtgui_time_raster_sink_x_0, 0))
         self.connect((self.blocks_repack_bits_bb_1_0, 0), (self.digital_crc32_bb_0_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.digital_crc32_bb_0, 0))
-        self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_repack_bits_bb_1, 0))
+        self.connect((self.blocks_tagged_stream_mux_0_0, 0), (self.digital_constellation_decoder_cb_0, 0))
+        self.connect((self.blocks_tagged_stream_mux_0_0, 0), (self.qtgui_const_sink_x_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
         self.connect((self.blocks_uchar_to_float_0_0, 0), (self.qtgui_time_sink_x_0_2, 0))
         self.connect((self.blocks_uchar_to_float_0_0_0, 0), (self.qtgui_time_sink_x_0_0, 0))
+        self.connect((self.blocks_unpacked_to_packed_xx_0, 0), (self.blocks_repack_bits_bb_1, 0))
+        self.connect((self.digital_chunks_to_symbols_xx_0_0, 0), (self.blocks_tagged_stream_mux_0_0, 1))
+        self.connect((self.digital_chunks_to_symbols_xx_0_1, 0), (self.blocks_tagged_stream_mux_0_0, 0))
+        self.connect((self.digital_constellation_decoder_cb_0, 0), (self.blocks_unpacked_to_packed_xx_0, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0, 0), (self.blocks_repack_bits_bb_1_0, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0, 0), (self.blocks_uchar_to_float_0_0_0, 0))
-        self.connect((self.digital_crc32_bb_0, 0), (self.blocks_tagged_stream_mux_0, 1))
+        self.connect((self.digital_crc32_bb_0, 0), (self.blocks_repack_bits_bb_0, 0))
         self.connect((self.digital_crc32_bb_0, 0), (self.digital_protocol_formatter_bb_0, 0))
         self.connect((self.digital_crc32_bb_0_0, 0), (self.blocks_file_sink_0, 0))
-        self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
+        self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_repack_bits_bb_0_0, 0))
 
 
     def closeEvent(self, event):
@@ -283,6 +339,12 @@ class test_video(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_0_2.set_samp_rate(self.samp_rate)
 
+    def get_payload_mod(self):
+        return self.payload_mod
+
+    def set_payload_mod(self, payload_mod):
+        self.payload_mod = payload_mod
+
     def get_packet_length(self):
         return self.packet_length
 
@@ -290,6 +352,13 @@ class test_video(gr.top_block, Qt.QWidget):
         self.packet_length = packet_length
         self.blocks_stream_to_tagged_stream_0.set_packet_len(self.packet_length)
         self.blocks_stream_to_tagged_stream_0.set_packet_len_pmt(self.packet_length)
+
+    def get_header_mod(self):
+        return self.header_mod
+
+    def set_header_mod(self, header_mod):
+        self.header_mod = header_mod
+        self.digital_constellation_decoder_cb_0.set_constellation(self.header_mod)
 
     def get_hdr_format(self):
         return self.hdr_format
