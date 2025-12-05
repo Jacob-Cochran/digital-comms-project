@@ -162,7 +162,7 @@ blocks:
     bus_structure: null
     coordinate: [1056, 508.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_repack_bits_bb_1_0
   id: blocks_repack_bits_bb
   parameters:
@@ -221,7 +221,7 @@ blocks:
     bus_structure: null
     coordinate: [832, 504.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_throttle2_0
   id: blocks_throttle2
   parameters:
@@ -642,7 +642,7 @@ blocks:
     bus_structure: null
     coordinate: [1280, 516.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: virtual_source_0
   id: virtual_source
   parameters:
@@ -655,7 +655,7 @@ blocks:
     bus_structure: null
     coordinate: [552, 556.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: virtual_source_0_0
   id: virtual_source
   parameters:
@@ -668,7 +668,7 @@ blocks:
     bus_structure: null
     coordinate: [552, 468.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: virtual_source_1
   id: virtual_source
   parameters:
