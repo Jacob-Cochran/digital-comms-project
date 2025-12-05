@@ -13,7 +13,6 @@ from gnuradio import qtgui
 from PyQt5 import QtCore
 from gnuradio import blocks
 import pmt
-from gnuradio import blocks, gr
 from gnuradio import digital
 from gnuradio import filter
 from gnuradio import gr
@@ -28,6 +27,7 @@ from gnuradio import eng_notation
 from gnuradio import gr, pdu
 from gnuradio import iio
 from gnuradio import pdu
+from gnuradio.ctrlport.monitor import *
 import numpy
 import packetized_loopback_test_packet_format_gr38 as packet_format_gr38  # embedded python block
 import sip
@@ -71,13 +71,14 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.usrp_rate = usrp_rate = int(1e6)
+        self.ts_packet_size = ts_packet_size = 188
+        self.packet_groups = packet_groups = 30
         self.tx_attenuation = tx_attenuation = 10
         self.thresh = thresh = 1
         self.sps = sps = 2
         self.samp_rate = samp_rate = int(1e6)
         self.phase_bw = phase_bw = 0.0628
-        self.packet_length = packet_length = 188
+        self.packet_length = packet_length = packet_groups*ts_packet_size
         self.order = order = 2
         self.excess_bw = excess_bw = 0.35
         self.center_freq = center_freq = 915e6
@@ -237,7 +238,7 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
         self.pdu_tagged_stream_to_pdu_1 = pdu.tagged_stream_to_pdu(gr.types.byte_t, 'packet_len')
         self.pdu_tagged_stream_to_pdu_0 = pdu.tagged_stream_to_pdu(gr.types.byte_t, 'packet_len')
         self.pdu_pdu_to_tagged_stream_0 = pdu.pdu_to_tagged_stream(gr.types.byte_t, 'packet_len')
-        self.pdu_pdu_to_stream_x_0 = pdu.pdu_to_stream_b(pdu.EARLY_BURST_DROP, 2048)
+        self.pdu_pdu_to_stream_x_0 = pdu.pdu_to_stream_b(pdu.EARLY_BURST_DROP, 50000)
         self.packet_format_gr38 = packet_format_gr38.blk()
         self.iio_pluto_source_0 = iio.fmcomms2_source_fc32('192.168.2.1' if '192.168.2.1' else iio.get_pluto_uri(), [True, True], 32768)
         self.iio_pluto_source_0.set_len_tag_key('packet_len')
@@ -285,29 +286,26 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
             log=False,
             truncate=False)
         self.digital_constellation_decoder_cb_0 = digital.constellation_decoder_cb(bpsk)
-        self.blocks_throttle2_0_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_length, "packet_len")
         self.blocks_repack_bits_bb_1 = blocks.repack_bits_bb(1, 8, "packet_len", False, gr.GR_MSB_FIRST)
-        self.blocks_message_debug_0 = blocks.message_debug(True, gr.log_levels.info)
         self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/jcochran/comms/test_video/mp4sample.ts', True, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
         self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, '/tmp/test.ts', False)
         self.blocks_file_sink_0_0.set_unbuffered(False)
+        self.blocks_ctrlport_monitor_performance_0 = not True or monitor("gr-perf-monitorx")
 
 
         ##################################################
         # Connections
         ##################################################
         self.msg_connect((self.digital_crc_append_0, 'out'), (self.packet_format_gr38, 'PDU_in'))
-        self.msg_connect((self.digital_crc_check_0, 'fail'), (self.blocks_message_debug_0, 'print'))
         self.msg_connect((self.digital_crc_check_0, 'ok'), (self.pdu_pdu_to_stream_x_0, 'pdus'))
         self.msg_connect((self.packet_format_gr38, 'PDU_out0'), (self.pdu_pdu_to_tagged_stream_0, 'pdus'))
         self.msg_connect((self.pdu_tagged_stream_to_pdu_0, 'pdus'), (self.digital_crc_append_0, 'in'))
         self.msg_connect((self.pdu_tagged_stream_to_pdu_1, 'pdus'), (self.digital_crc_check_0, 'in'))
-        self.connect((self.blocks_file_source_0, 0), (self.blocks_throttle2_0_0, 0))
+        self.connect((self.blocks_file_source_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
         self.connect((self.blocks_repack_bits_bb_1, 0), (self.pdu_tagged_stream_to_pdu_1, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.pdu_tagged_stream_to_pdu_0, 0))
-        self.connect((self.blocks_throttle2_0_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_diff_decoder_bb_0, 0))
         self.connect((self.digital_constellation_modulator_0, 0), (self.iio_pluto_sink_0_0, 0))
         self.connect((self.digital_constellation_modulator_0, 0), (self.qtgui_time_sink_x_0, 0))
@@ -331,11 +329,19 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
 
         event.accept()
 
-    def get_usrp_rate(self):
-        return self.usrp_rate
+    def get_ts_packet_size(self):
+        return self.ts_packet_size
 
-    def set_usrp_rate(self, usrp_rate):
-        self.usrp_rate = usrp_rate
+    def set_ts_packet_size(self, ts_packet_size):
+        self.ts_packet_size = ts_packet_size
+        self.set_packet_length(self.packet_groups*self.ts_packet_size)
+
+    def get_packet_groups(self):
+        return self.packet_groups
+
+    def set_packet_groups(self, packet_groups):
+        self.packet_groups = packet_groups
+        self.set_packet_length(self.packet_groups*self.ts_packet_size)
 
     def get_tx_attenuation(self):
         return self.tx_attenuation
@@ -362,7 +368,6 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.blocks_throttle2_0_0.set_sample_rate(self.samp_rate)
         self.iio_pluto_sink_0_0.set_bandwidth(int(self.samp_rate))
         self.iio_pluto_sink_0_0.set_samplerate(int(self.samp_rate))
         self.iio_pluto_source_0.set_samplerate(int(self.samp_rate))
@@ -439,6 +444,7 @@ def main(top_block_cls=packetized_loopback_test, options=None):
     timer.start(500)
     timer.timeout.connect(lambda: None)
 
+    tb.blocks_ctrlport_monitor_performance_0.start()
     qapp.exec_()
 
 if __name__ == '__main__':
