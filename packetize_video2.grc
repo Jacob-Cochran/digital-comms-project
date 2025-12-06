@@ -46,6 +46,60 @@ blocks:
     coordinate: [496, 28.0]
     rotation: 0
     state: enabled
+- name: alpha
+  id: variable
+  parameters:
+    comment: 'Can''t change alpha in real time
+
+      for Consteallation Modulator'
+    value: '0.50'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1312, 36.0]
+    rotation: 0
+    state: enabled
+- name: constellation
+  id: variable_constellation
+  parameters:
+    comment: Differentially encoded 4QAM constellation
+    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
+    dims: '1'
+    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
+    npwr: '1.0'
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1, 2, 3]'
+    type: calcdist
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [896, 28.0]
+    rotation: 0
+    state: enabled
+- name: constellation
+  id: variable_constellation
+  parameters:
+    comment: ''
+    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
+    dims: '1'
+    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
+    npwr: '1.0'
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1, 3, 2]'
+    type: bpsk
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1752, 68.0]
+    rotation: 0
+    state: disabled
 - name: frame_sync_cols
   id: variable_qtgui_range
   parameters:
@@ -103,6 +157,18 @@ blocks:
     coordinate: [200, 12]
     rotation: 0
     state: enabled
+- name: sps
+  id: variable
+  parameters:
+    comment: ''
+    value: '16'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1200, 44.0]
+    rotation: 0
+    state: enabled
 - name: blocks_file_sink_0
   id: blocks_file_sink
   parameters:
@@ -120,7 +186,7 @@ blocks:
     bus_structure: null
     coordinate: [1448, 660.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_file_source_0
   id: blocks_file_source
   parameters:
@@ -182,7 +248,7 @@ blocks:
     bus_structure: null
     coordinate: [984, 668.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_stream_to_tagged_stream_0
   id: blocks_stream_to_tagged_stream
   parameters:
@@ -275,6 +341,50 @@ blocks:
     coordinate: [992, 824.0]
     rotation: 0
     state: enabled
+- name: digital_constellation_modulator_0_0
+  id: digital_constellation_modulator
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation: constellation
+    differential: 'True'
+    excess_bw: alpha
+    log: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_symbol: sps
+    truncate: 'False'
+    verbose: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1752, 468.0]
+    rotation: 0
+    state: enabled
+- name: digital_constellation_receiver_cb_0
+  id: digital_constellation_receiver_cb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Input comes from Symbol Sync
+
+      Includes a Costas Loop to do phase sync'
+    constellation: constellation
+    fmax: math.pi
+    fmin: -math.pi
+    loop_bw: 2*math.pi/100
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    showports: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2056, 432.0]
+    rotation: 0
+    state: enabled
 - name: digital_correlate_access_code_xx_ts_0
   id: digital_correlate_access_code_xx_ts
   parameters:
@@ -329,6 +439,23 @@ blocks:
     bus_structure: null
     coordinate: [1192, 660.0]
     rotation: 0
+    state: disabled
+- name: digital_diff_decoder_bb_0
+  id: digital_diff_decoder_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    coding: digital.DIFF_DIFFERENTIAL
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    modulus: constellation.arity()
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2400, 420.0]
+    rotation: 0
     state: enabled
 - name: digital_protocol_formatter_bb_0
   id: digital_protocol_formatter_bb
@@ -345,6 +472,32 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1344, 276.0]
+    rotation: 0
+    state: true
+- name: import_0
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: import numpy
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1448, 36.0]
+    rotation: 0
+    state: enabled
+- name: import_0_0
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: import math
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1560, 36.0]
     rotation: 0
     state: true
 - name: qtgui_time_raster_sink_x_0
@@ -643,6 +796,19 @@ blocks:
     coordinate: [1280, 516.0]
     rotation: 0
     state: enabled
+- name: virtual_sink_1_1
+  id: virtual_sink
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: rx_demod
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2608, 428.0]
+    rotation: 0
+    state: enabled
 - name: virtual_source_0
   id: virtual_source
   parameters:
@@ -674,7 +840,7 @@ blocks:
   parameters:
     alias: ''
     comment: ''
-    stream_id: pkt_out
+    stream_id: rx_demod
   states:
     bus_sink: false
     bus_source: false
@@ -682,6 +848,32 @@ blocks:
     coordinate: [168, 660.0]
     rotation: 0
     state: enabled
+- name: virtual_source_1_0
+  id: virtual_source
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: pkt_out
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1504, 492.0]
+    rotation: 0
+    state: enabled
+- name: virtual_source_1_0_0
+  id: virtual_source
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: pkt_out
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [176, 724.0]
+    rotation: 0
+    state: disabled
 
 connections:
 - [blocks_file_source_0, '0', blocks_throttle2_0, '0']
@@ -692,17 +884,25 @@ connections:
 - [blocks_throttle2_0, '0', blocks_stream_to_tagged_stream_0, '0']
 - [blocks_uchar_to_float_0_0, '0', qtgui_time_sink_x_0_2, '0']
 - [blocks_uchar_to_float_0_0_0, '0', qtgui_time_sink_x_0_0, '0']
+- [digital_constellation_modulator_0_0, '0', digital_constellation_receiver_cb_0,
+  '0']
+- [digital_constellation_receiver_cb_0, '0', digital_diff_decoder_bb_0, '0']
 - [digital_correlate_access_code_xx_ts_0, '0', blocks_repack_bits_bb_1_0, '0']
 - [digital_correlate_access_code_xx_ts_0, '0', blocks_uchar_to_float_0_0_0, '0']
 - [digital_crc32_bb_0, '0', digital_protocol_formatter_bb_0, '0']
 - [digital_crc32_bb_0, '0', virtual_sink_0, '0']
 - [digital_crc32_bb_0_0, '0', blocks_file_sink_0, '0']
+- [digital_diff_decoder_bb_0, '0', virtual_sink_1_1, '0']
 - [digital_protocol_formatter_bb_0, '0', virtual_sink_0_0, '0']
 - [virtual_source_0, '0', blocks_tagged_stream_mux_0, '1']
 - [virtual_source_0_0, '0', blocks_tagged_stream_mux_0, '0']
 - [virtual_source_1, '0', blocks_uchar_to_float_0_0, '0']
 - [virtual_source_1, '0', digital_correlate_access_code_xx_ts_0, '0']
 - [virtual_source_1, '0', qtgui_time_raster_sink_x_0, '0']
+- [virtual_source_1_0, '0', digital_constellation_modulator_0_0, '0']
+- [virtual_source_1_0_0, '0', blocks_uchar_to_float_0_0, '0']
+- [virtual_source_1_0_0, '0', digital_correlate_access_code_xx_ts_0, '0']
+- [virtual_source_1_0_0, '0', qtgui_time_raster_sink_x_0, '0']
 
 metadata:
   file_format: 1

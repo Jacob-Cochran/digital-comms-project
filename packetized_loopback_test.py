@@ -70,24 +70,27 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
         # Variables
         ##################################################
         self.ts_packet_size = ts_packet_size = 188
-        self.sps = sps = 2
+        self.sps = sps = 16
         self.samp_rate = samp_rate = int(1e6)
         self.packet_groups = packet_groups = 1
         self.nfilts = nfilts = 32
+        self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
+        4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
+        self.constellation.set_npwr(1.0)
         self.alpha = alpha = 0.50
         self.access_key = access_key = '11100001010110101110100010010011'
+        self.tx_attenuation_0 = tx_attenuation_0 = 10
         self.tx_attenuation = tx_attenuation = 10
         self.rx_gain = rx_gain = 20
         self.rcc_taps = rcc_taps = firdes.root_raised_cosine(nfilts, nfilts*samp_rate,samp_rate/sps, alpha, (11*sps*nfilts))
         self.packet_length = packet_length = packet_groups*ts_packet_size
-        self.out_frame_sync_cols = out_frame_sync_cols = 1600
-        self.in_frame_sync_cols = in_frame_sync_cols = 1600
+        self.out_frame_sync_cols = out_frame_sync_cols = 200
+        self.in_frame_sync_cols = in_frame_sync_cols = 200
         self.hdr_format = hdr_format = digital.header_format_default(access_key, 0)
-        self.excess_bw = excess_bw = 0.35
-        self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
+        self.constellation_0 = constellation_0 = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
         4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
-        self.constellation.set_npwr(1.0)
-        self.cfo_offset = cfo_offset = 500
+        self.constellation_0.set_npwr(1.0)
+        self.cfo_offset = cfo_offset = 0
         self.center_freq = center_freq = 915e6
 
         ##################################################
@@ -97,19 +100,22 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
         self._tx_attenuation_range = qtgui.Range(0, 89, 1, 10, 200)
         self._tx_attenuation_win = qtgui.RangeWidget(self._tx_attenuation_range, self.set_tx_attenuation, "'tx_attenuation'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._tx_attenuation_win)
-        self._out_frame_sync_cols_range = qtgui.Range(0, 40000, 1, 1600, 200)
+        self._out_frame_sync_cols_range = qtgui.Range(0, 40000, 1, 200, 200)
         self._out_frame_sync_cols_win = qtgui.RangeWidget(self._out_frame_sync_cols_range, self.set_out_frame_sync_cols, "'out_frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._out_frame_sync_cols_win)
-        self._in_frame_sync_cols_range = qtgui.Range(0, 40000, 1, 1600, 200)
+        self._in_frame_sync_cols_range = qtgui.Range(0, 40000, 1, 200, 200)
         self._in_frame_sync_cols_win = qtgui.RangeWidget(self._in_frame_sync_cols_range, self.set_in_frame_sync_cols, "'in_frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._in_frame_sync_cols_win)
-        self._cfo_offset_range = qtgui.Range(-500e3, 500e3, 1, 500, 200)
+        self._cfo_offset_range = qtgui.Range(-500e3, 500e3, 1, 0, 200)
         self._cfo_offset_win = qtgui.RangeWidget(self._cfo_offset_range, self.set_cfo_offset, "Artificial CFO (Hz)", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_grid_layout.addWidget(self._cfo_offset_win, 6, 0, 1, 1)
         for r in range(6, 7):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 1):
             self.top_grid_layout.setColumnStretch(c, 1)
+        self._tx_attenuation_0_range = qtgui.Range(0, 89, 1, 10, 200)
+        self._tx_attenuation_0_win = qtgui.RangeWidget(self._tx_attenuation_0_range, self.set_tx_attenuation_0, "'tx_attenuation_0'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._tx_attenuation_0_win)
         self._rx_gain_range = qtgui.Range(0, 70, 1, 20, 200)
         self._rx_gain_win = qtgui.RangeWidget(self._rx_gain_range, self.set_rx_gain, "'rx_gain'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._rx_gain_win)
@@ -474,7 +480,7 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
         self._qtgui_const_sink_x_1_win = sip.wrapinstance(self.qtgui_const_sink_x_1.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_const_sink_x_1_win)
         self.iio_pluto_source_0 = iio.fmcomms2_source_fc32('192.168.2.1' if '192.168.2.1' else iio.get_pluto_uri(), [True, True], 32768)
-        self.iio_pluto_source_0.set_len_tag_key('packet_len')
+        self.iio_pluto_source_0.set_len_tag_key('')
         self.iio_pluto_source_0.set_frequency(int(center_freq))
         self.iio_pluto_source_0.set_samplerate(int(samp_rate))
         self.iio_pluto_source_0.set_gain_mode(0, 'slow_attack')
@@ -518,13 +524,14 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
             verbose=False,
             log=False,
             truncate=False)
+        self.blocks_unpack_k_bits_bb_0_0 = blocks.unpack_k_bits_bb(constellation.bits_per_symbol())
         self.blocks_uchar_to_float_0_0_0 = blocks.uchar_to_float()
         self.blocks_uchar_to_float_0_0 = blocks.uchar_to_float()
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
         self.blocks_stream_to_tagged_stream_0_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_length, "packet_len")
         self.blocks_skiphead_0 = blocks.skiphead(gr.sizeof_gr_complex*1, int(samp_rate))
-        self.blocks_packed_to_unpacked_xx_0 = blocks.packed_to_unpacked_bb(1, gr.GR_MSB_FIRST)
+        self.blocks_repack_bits_bb_1 = blocks.repack_bits_bb(8, 1, "", False, gr.GR_MSB_FIRST)
         self.blocks_null_sink_0_1 = blocks.null_sink(gr.sizeof_float*1)
         self.blocks_null_sink_0_0_0 = blocks.null_sink(gr.sizeof_float*1)
         self.blocks_null_sink_0_0 = blocks.null_sink(gr.sizeof_float*1)
@@ -547,14 +554,17 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.qtgui_time_sink_x_0_1, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.analog_agc_xx_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.qtgui_freq_sink_x_0, 1))
-        self.connect((self.blocks_packed_to_unpacked_xx_0, 0), (self.qtgui_time_raster_sink_x_0_0, 0))
+        self.connect((self.blocks_repack_bits_bb_1, 0), (self.digital_correlate_access_code_xx_ts_0, 0))
         self.connect((self.blocks_skiphead_0, 0), (self.digital_symbol_sync_xx_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.digital_crc32_bb_0, 0))
-        self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_packed_to_unpacked_xx_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_constellation_modulator_0_0, 0))
+        self.connect((self.blocks_tagged_stream_mux_0, 0), (self.qtgui_time_raster_sink_x_0_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
         self.connect((self.blocks_uchar_to_float_0_0, 0), (self.qtgui_time_sink_x_0_2, 0))
         self.connect((self.blocks_uchar_to_float_0_0_0, 0), (self.qtgui_time_sink_x_0_0_0, 0))
+        self.connect((self.blocks_unpack_k_bits_bb_0_0, 0), (self.blocks_repack_bits_bb_1, 0))
+        self.connect((self.blocks_unpack_k_bits_bb_0_0, 0), (self.blocks_uchar_to_float_0_0, 0))
+        self.connect((self.blocks_unpack_k_bits_bb_0_0, 0), (self.qtgui_time_raster_sink_x_0_1, 0))
         self.connect((self.digital_constellation_modulator_0_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.digital_constellation_receiver_cb_0, 3), (self.blocks_null_sink_0, 0))
         self.connect((self.digital_constellation_receiver_cb_0, 2), (self.blocks_null_sink_0_0, 0))
@@ -564,17 +574,15 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
         self.connect((self.digital_correlate_access_code_xx_ts_0, 0), (self.blocks_uchar_to_float_0_0_0, 0))
         self.connect((self.digital_crc32_bb_0, 0), (self.blocks_tagged_stream_mux_0, 1))
         self.connect((self.digital_crc32_bb_0, 0), (self.digital_protocol_formatter_bb_0, 0))
-        self.connect((self.digital_diff_decoder_bb_0, 0), (self.blocks_uchar_to_float_0_0, 0))
-        self.connect((self.digital_diff_decoder_bb_0, 0), (self.digital_correlate_access_code_xx_ts_0, 0))
-        self.connect((self.digital_diff_decoder_bb_0, 0), (self.qtgui_time_raster_sink_x_0_1, 0))
+        self.connect((self.digital_diff_decoder_bb_0, 0), (self.blocks_unpack_k_bits_bb_0_0, 0))
         self.connect((self.digital_fll_band_edge_cc_0, 0), (self.blocks_skiphead_0, 0))
         self.connect((self.digital_fll_band_edge_cc_0, 0), (self.qtgui_freq_sink_x_0, 2))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 1), (self.blocks_null_sink_0_1, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_constellation_receiver_cb_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 3), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 1))
         self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
+        self.connect((self.digital_symbol_sync_xx_0, 3), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 1))
         self.connect((self.iio_pluto_source_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_freq_sink_x_0, 0))
 
@@ -635,6 +643,12 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
         self.nfilts = nfilts
         self.set_rcc_taps(firdes.root_raised_cosine(self.nfilts, self.nfilts*self.samp_rate, self.samp_rate/self.sps, self.alpha, (11*self.sps*self.nfilts)))
 
+    def get_constellation(self):
+        return self.constellation
+
+    def set_constellation(self, constellation):
+        self.constellation = constellation
+
     def get_alpha(self):
         return self.alpha
 
@@ -648,6 +662,12 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
     def set_access_key(self, access_key):
         self.access_key = access_key
         self.set_hdr_format(digital.header_format_default(self.access_key, 0))
+
+    def get_tx_attenuation_0(self):
+        return self.tx_attenuation_0
+
+    def set_tx_attenuation_0(self, tx_attenuation_0):
+        self.tx_attenuation_0 = tx_attenuation_0
 
     def get_tx_attenuation(self):
         return self.tx_attenuation
@@ -697,17 +717,11 @@ class packetized_loopback_test(gr.top_block, Qt.QWidget):
         self.hdr_format = hdr_format
         self.digital_protocol_formatter_bb_0.set_header_format(self.hdr_format)
 
-    def get_excess_bw(self):
-        return self.excess_bw
+    def get_constellation_0(self):
+        return self.constellation_0
 
-    def set_excess_bw(self, excess_bw):
-        self.excess_bw = excess_bw
-
-    def get_constellation(self):
-        return self.constellation
-
-    def set_constellation(self, constellation):
-        self.constellation = constellation
+    def set_constellation_0(self, constellation_0):
+        self.constellation_0 = constellation_0
 
     def get_cfo_offset(self):
         return self.cfo_offset

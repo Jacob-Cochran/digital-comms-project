@@ -142,7 +142,7 @@ class lesson21_QPSK_modem(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0_0_0_0_0_0_1_0 = qtgui.time_sink_f(
             100, #size
             samp_rate, #samp_rate
-            "", #name
+            "Char to Float", #name
             1, #number of inputs
             None # parent
         )
@@ -295,7 +295,7 @@ class lesson21_QPSK_modem(gr.top_block, Qt.QWidget):
             1024,
             [],
             [],
-            "",
+            "Pre-Modulation Raster",
             1,
             None
         )
@@ -332,7 +332,7 @@ class lesson21_QPSK_modem(gr.top_block, Qt.QWidget):
             1024,
             [],
             [],
-            "",
+            "Unpacked Raster",
             1,
             None
         )
