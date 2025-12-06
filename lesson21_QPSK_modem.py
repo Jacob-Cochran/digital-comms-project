@@ -76,7 +76,7 @@ class lesson21_QPSK_modem(gr.top_block, Qt.QWidget):
         self.tx_attenuation = tx_attenuation = 10
         self.rx_gain = rx_gain = 20
         self.rcc_taps = rcc_taps = firdes.root_raised_cosine(nfilts, nfilts*samp_rate,samp_rate/sps, alpha, (11*sps*nfilts))
-        self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
+        self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3] ,
         4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
         self.constellation.set_npwr(1.0)
         self.center_freq = center_freq = 915e6
@@ -407,7 +407,7 @@ class lesson21_QPSK_modem(gr.top_block, Qt.QWidget):
         self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
         self.qtgui_const_sink_x_1 = qtgui.const_sink_c(
             1024, #size
-            "", #name
+            "Symbol Sink and Costas", #name
             2, #number of inputs
             None # parent
         )
@@ -420,13 +420,13 @@ class lesson21_QPSK_modem(gr.top_block, Qt.QWidget):
         self.qtgui_const_sink_x_1.enable_axis_labels(True)
 
 
-        labels = ['Sync', 'Costas', '', '', '',
+        labels = ['Sync', 'Costas', 'No CFO Correction', '', '',
             '', '', '', '', '']
         widths = [1, 1, 1, 1, 1,
             1, 1, 1, 1, 1]
         colors = ["blue", "red", "red", "red", "red",
             "red", "red", "red", "red", "red"]
-        styles = [0, 0, 0, 0, 0,
+        styles = [5, 0, 0, 0, 0,
             0, 0, 0, 0, 0]
         markers = [0, 0, 0, 0, 0,
             0, 0, 0, 0, 0]
@@ -525,8 +525,8 @@ class lesson21_QPSK_modem(gr.top_block, Qt.QWidget):
         self.connect((self.digital_symbol_sync_xx_0, 1), (self.blocks_null_sink_0_1, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_constellation_receiver_cb_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 3), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 1))
+        self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.analog_agc_xx_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_time_sink_x_0_0, 0))
