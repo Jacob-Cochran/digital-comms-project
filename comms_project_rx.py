@@ -74,7 +74,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.ts_packet_size = ts_packet_size = 188
         self.thresh = thresh = 0
         self.sps = sps = 16
-        self.samp_rate = samp_rate = int(5e6)
+        self.samp_rate = samp_rate = int(1e6)
         self.packet_groups = packet_groups = 1
         self.nfilts = nfilts = 32
         self.bps = bps = constellation.bits_per_symbol()
@@ -85,6 +85,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.packet_length = packet_length = packet_groups*ts_packet_size
         self.out_frame_sync_cols = out_frame_sync_cols = 200
         self.hdr_format = hdr_format = digital.header_format_default(access_key, thresh, bps)
+        self.costas_loop_bandwidth_in_cycles_per_sample = costas_loop_bandwidth_in_cycles_per_sample = .01
         self.cfo_offset = cfo_offset = 200
         self.center_freq = center_freq = 915e6
 
@@ -95,6 +96,13 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self._out_frame_sync_cols_range = qtgui.Range(0, 40000, 1, 200, 200)
         self._out_frame_sync_cols_win = qtgui.RangeWidget(self._out_frame_sync_cols_range, self.set_out_frame_sync_cols, "'out_frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._out_frame_sync_cols_win)
+        self._costas_loop_bandwidth_in_cycles_per_sample_range = qtgui.Range(0.0001, 0.2, 0.0001, .01, 200)
+        self._costas_loop_bandwidth_in_cycles_per_sample_win = qtgui.RangeWidget(self._costas_loop_bandwidth_in_cycles_per_sample_range, self.set_costas_loop_bandwidth_in_cycles_per_sample, "'costas_loop_bandwidth_in_cycles_per_sample'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_grid_layout.addWidget(self._costas_loop_bandwidth_in_cycles_per_sample_win, 20, 0, 1, 1)
+        for r in range(20, 21):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(0, 1):
+            self.top_grid_layout.setColumnStretch(c, 1)
         self._cfo_offset_range = qtgui.Range(-500e3, 500e3, 1, 200, 200)
         self._cfo_offset_win = qtgui.RangeWidget(self._cfo_offset_range, self.set_cfo_offset, "'cfo_offset'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_grid_layout.addWidget(self._cfo_offset_win, 6, 0, 1, 1)
@@ -352,7 +360,11 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
             self.qtgui_time_sink_x_0_0_0_0_0_0_1_0.set_line_alpha(i, alphas[i])
 
         self._qtgui_time_sink_x_0_0_0_0_0_0_1_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0_0_0_0_0_0_1_0.qwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_sink_x_0_0_0_0_0_0_1_0_win)
+        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_0_0_0_0_0_1_0_win, 21, 0, 1, 1)
+        for r in range(21, 22):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(0, 1):
+            self.top_grid_layout.setColumnStretch(c, 1)
         self.qtgui_time_raster_sink_x_0_1_0_0_0 = qtgui.time_raster_sink_b(
             samp_rate,
             64,
@@ -470,7 +482,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
         self.qtgui_const_sink_x_1 = qtgui.const_sink_c(
-            1024, #size
+            4096, #size
             "Symbol Sink and Costas", #name
             2, #number of inputs
             None # parent
@@ -537,7 +549,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.digital_crc32_bb_0_0_0_0 = digital.crc32_bb(True, "packet_len", True)
         self.digital_correlate_access_code_xx_ts_0_0_0 = digital.correlate_access_code_bb_ts(access_key,
           thresh, "packet_len")
-        self.digital_constellation_receiver_cb_0 = digital.constellation_receiver_cb(constellation, (2*math.pi/100), (-math.pi), math.pi)
+        self.digital_constellation_receiver_cb_0 = digital.constellation_receiver_cb(constellation, (2*math.pi*costas_loop_bandwidth_in_cycles_per_sample), (-math.pi), math.pi)
         self.blocks_unpacked_to_packed_xx_0 = blocks.unpacked_to_packed_bb(constellation.bits_per_symbol(), gr.GR_MSB_FIRST)
         self.blocks_uchar_to_float_0_0_1_0 = blocks.uchar_to_float()
         self.blocks_uchar_to_float_0_0_0_0_0 = blocks.uchar_to_float()
@@ -716,6 +728,12 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
 
     def set_hdr_format(self, hdr_format):
         self.hdr_format = hdr_format
+
+    def get_costas_loop_bandwidth_in_cycles_per_sample(self):
+        return self.costas_loop_bandwidth_in_cycles_per_sample
+
+    def set_costas_loop_bandwidth_in_cycles_per_sample(self, costas_loop_bandwidth_in_cycles_per_sample):
+        self.costas_loop_bandwidth_in_cycles_per_sample = costas_loop_bandwidth_in_cycles_per_sample
 
     def get_cfo_offset(self):
         return self.cfo_offset

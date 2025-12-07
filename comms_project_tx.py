@@ -77,7 +77,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.access_key = access_key = '11100001010110101110100010010011'
         self.tx_attenuation = tx_attenuation = 10
         self.sps = sps = 16
-        self.samp_rate = samp_rate = int(5e6)
+        self.samp_rate = samp_rate = int(1e6)
         self.packet_length = packet_length = packet_groups*ts_packet_size
         self.out_frame_sync_cols = out_frame_sync_cols = 200
         self.in_frame_sync_cols = in_frame_sync_cols = 200

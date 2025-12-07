@@ -168,6 +168,27 @@ blocks:
     coordinate: [616, 196.0]
     rotation: 0
     state: disabled
+- name: costas_loop_bandwidth_in_cycles_per_sample
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 20,0
+    label: ''
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.0001'
+    step: '0.0001'
+    stop: '0.2'
+    value: '.01'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1264, 876.0]
+    rotation: 0
+    state: true
 - name: hdr_format
   id: variable
   parameters:
@@ -282,7 +303,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: int(5e6)
+    value: int(1e6)
   states:
     bus_sink: false
     bus_source: false
@@ -643,7 +664,7 @@ blocks:
     constellation: constellation
     fmax: math.pi
     fmin: -math.pi
-    loop_bw: 2*math.pi/100
+    loop_bw: 2*math.pi*costas_loop_bandwidth_in_cycles_per_sample
     maxoutbuf: '0'
     minoutbuf: '0'
     showports: 'False'
@@ -868,7 +889,7 @@ blocks:
     marker9: '0'
     name: '"Symbol Sink and Costas"'
     nconnections: '2'
-    size: '1024'
+    size: '4096'
     style1: '5'
     style10: '0'
     style2: '0'
@@ -1208,7 +1229,7 @@ blocks:
     ctrlpanel: 'False'
     entags: 'True'
     grid: 'False'
-    gui_hint: ''
+    gui_hint: 21,0
     label1: Constellation Receiver Decoded
     label10: Signal 10
     label2: Costas Im
