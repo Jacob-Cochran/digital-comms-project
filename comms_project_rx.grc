@@ -147,7 +147,7 @@ blocks:
     bus_structure: null
     coordinate: [616, 12.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: constellation
   id: variable_constellation
   parameters:
@@ -187,7 +187,7 @@ blocks:
     bus_structure: null
     coordinate: [880, 196.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: costas_loop_bandwidth_in_cycles_per_sample
   id: variable_qtgui_range
   parameters:
