@@ -1,3 +1,5 @@
 Miniconda3-latest-Linux-x86_64.sh
 exit/
 .vscode
+old/
+__pycache__/
