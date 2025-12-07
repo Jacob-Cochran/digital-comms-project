@@ -890,7 +890,7 @@ blocks:
     name: '"Symbol Sink and Costas"'
     nconnections: '2'
     size: '4096'
-    style1: '5'
+    style1: '0'
     style10: '0'
     style2: '0'
     style3: '0'

@@ -502,7 +502,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
             1, 1, 1, 1, 1]
         colors = ["blue", "red", "red", "red", "red",
             "red", "red", "red", "red", "red"]
-        styles = [5, 0, 0, 0, 0,
+        styles = [0, 0, 0, 0, 0,
             0, 0, 0, 0, 0]
         markers = [0, 0, 0, 0, 0,
             0, 0, 0, 0, 0]
@@ -603,8 +603,8 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_symbol_sync_xx_0, 1), (self.blocks_null_sink_0_1, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_constellation_receiver_cb_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 3), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 1))
+        self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_freq_sink_x_0, 0))
 
