@@ -91,14 +91,14 @@ blocks:
       CFO to verify that the FFL is doing
 
       coarse CFO correction'
-    gui_hint: 6,0
+    gui_hint: 0,0,1,4
     label: ''
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: float
-    start: -500e3
+    start: -200e3
     step: '1'
-    stop: 500e3
+    stop: 200e3
     value: '200'
     widget: counter_slider
   states:
@@ -167,7 +167,7 @@ blocks:
     bus_structure: null
     coordinate: [616, 196.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: constellation
   id: variable_constellation
   parameters:
@@ -187,12 +187,12 @@ blocks:
     bus_structure: null
     coordinate: [880, 196.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: costas_loop_bandwidth_in_cycles_per_sample
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: 20,0
+    gui_hint: 3,0,1,4
     label: ''
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -200,7 +200,7 @@ blocks:
     start: '0.0001'
     step: '0.0001'
     stop: '0.2'
-    value: '.01'
+    value: '0.01'
     widget: counter_slider
   states:
     bus_sink: false
@@ -208,7 +208,7 @@ blocks:
     bus_structure: null
     coordinate: [1264, 876.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: hdr_format
   id: variable
   parameters:
@@ -245,7 +245,7 @@ blocks:
     rangeType: int
     start: '0'
     step: '1'
-    stop: '40000'
+    stop: '1600'
     value: '200'
     widget: counter_slider
   states:
@@ -296,27 +296,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [880, 1300.0]
-    rotation: 0
-    state: enabled
-- name: rx_gain
-  id: variable_qtgui_range
-  parameters:
-    comment: ''
-    gui_hint: ''
-    label: ''
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0'
-    step: '1'
-    stop: '70'
-    value: '20'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [64, 500.0]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -384,7 +363,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [672, 612.0]
+    coordinate: [560, 644.0]
     rotation: 0
     state: enabled
 - name: analog_sig_source_x_0
@@ -407,7 +386,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [280, 732.0]
+    coordinate: [216, 724.0]
     rotation: 0
     state: enabled
 - name: blocks_char_to_float_0
@@ -443,7 +422,7 @@ blocks:
     bus_structure: null
     coordinate: [1864, 1100.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_file_sink_0_0_0
   id: blocks_file_sink
   parameters:
@@ -477,7 +456,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [544, 744.0]
+    coordinate: [424, 544.0]
     rotation: 0
     state: enabled
 - name: blocks_null_sink_0
@@ -605,7 +584,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [904, 900.0]
+    coordinate: [896, 812.0]
     rotation: 180
     state: enabled
 - name: blocks_uchar_to_float_0_0_0_0_0
@@ -684,7 +663,7 @@ blocks:
     constellation: constellation
     fmax: math.pi
     fmin: -math.pi
-    loop_bw: 2*math.pi*costas_loop_bandwidth_in_cycles_per_sample
+    loop_bw: 2*math.pi/100
     maxoutbuf: '0'
     minoutbuf: '0'
     showports: 'False'
@@ -766,7 +745,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [920, 632.0]
+    coordinate: [760, 624.0]
     rotation: 0
     state: enabled
 - name: digital_symbol_sync_xx_0
@@ -796,7 +775,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [800, 1028.0]
+    coordinate: [776, 900.0]
     rotation: 0
     state: enabled
 - name: iio_pluto_source_0
@@ -827,7 +806,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 500.0]
+    coordinate: [88, 436.0]
     rotation: 0
     state: enabled
 - name: import_0
@@ -885,7 +864,7 @@ blocks:
     color9: '"red"'
     comment: ''
     grid: 'False'
-    gui_hint: ''
+    gui_hint: 4,0,1,4
     label1: Sync
     label10: ''
     label2: Costas
@@ -983,7 +962,7 @@ blocks:
     fftsize: 1024*8
     freqhalf: 'True'
     grid: 'False'
-    gui_hint: ''
+    gui_hint: 1,0,1,4
     label: Relative Gain
     label1: Receive Raw
     label10: ''''''
@@ -1120,7 +1099,7 @@ blocks:
     color9: '0'
     comment: ''
     grid: 'False'
-    gui_hint: ''
+    gui_hint: 6,0,1,2
     label1: ''
     label10: ''
     label2: ''
@@ -1183,7 +1162,7 @@ blocks:
     color9: '0'
     comment: ''
     grid: 'False'
-    gui_hint: ''
+    gui_hint: 6,2,1,2
     label1: ''
     label10: ''
     label2: ''
@@ -1314,7 +1293,7 @@ blocks:
     bus_structure: null
     coordinate: [2056, 1076.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_time_sink_x_0_0_0_0_0_0_1_0_0
   id: qtgui_time_sink_x
   parameters:
@@ -1346,7 +1325,7 @@ blocks:
     ctrlpanel: 'False'
     entags: 'True'
     grid: 'False'
-    gui_hint: ''
+    gui_hint: 5,0,1,4
     label1: Sync T_inst
     label10: Signal 10
     label2: Sync T_avg
@@ -1441,9 +1420,9 @@ blocks:
     color9: dark green
     comment: ''
     ctrlpanel: 'False'
-    entags: 'True'
+    entags: 'False'
     grid: 'False'
-    gui_hint: ''
+    gui_hint: 8,0,1,4
     label1: Constellation Receiver Decoded
     label10: Signal 10
     label2: Costas Im
@@ -1540,7 +1519,7 @@ blocks:
     ctrlpanel: 'False'
     entags: 'True'
     grid: 'False'
-    gui_hint: 1,2,1,2
+    gui_hint: 7,2,1,2
     label1: ''
     label10: ''
     label2: ''
@@ -1637,7 +1616,7 @@ blocks:
     ctrlpanel: 'False'
     entags: 'True'
     grid: 'False'
-    gui_hint: 1,0,1,2
+    gui_hint: 7,0,1,2
     label1: ''
     label10: ''
     label2: ''
@@ -1703,6 +1682,26 @@ blocks:
     coordinate: [1512, 1700.0]
     rotation: 0
     state: enabled
+- name: video_sdl_sink_0
+  id: video_sdl_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    display_height: '480'
+    display_width: '640'
+    fps: '0'
+    height: '480'
+    num_channels: '1'
+    type: byte
+    width: '640'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2160, 1436.0]
+    rotation: 0
+    state: disabled
 - name: virtual_sink_1
   id: virtual_sink
   parameters:
@@ -1716,19 +1715,6 @@ blocks:
     coordinate: [2048, 1372.0]
     rotation: 0
     state: enabled
-- name: virtual_sink_2
-  id: virtual_sink
-  parameters:
-    alias: ''
-    comment: ''
-    stream_id: rx_in
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [456, 572.0]
-    rotation: 0
-    state: enabled
 - name: virtual_source_1_0_0
   id: virtual_source
   parameters:
@@ -1740,19 +1726,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [784, 1580.0]
-    rotation: 0
-    state: enabled
-- name: virtual_source_3
-  id: virtual_source
-  parameters:
-    alias: ''
-    comment: ''
-    stream_id: rx_in
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [544, 524.0]
     rotation: 0
     state: enabled
 
@@ -1783,6 +1756,7 @@ connections:
   '0']
 - [digital_crc32_bb_0_0_0_0, '0', blocks_char_to_float_0, '0']
 - [digital_crc32_bb_0_0_0_0, '0', blocks_file_sink_0_0_0, '0']
+- [digital_crc32_bb_0_0_0_0, '0', video_sdl_sink_0, '0']
 - [digital_diff_decoder_bb_0, '0', blocks_char_to_float_0_0, '0']
 - [digital_diff_decoder_bb_0, '0', blocks_unpack_k_bits_bb_0, '0']
 - [digital_diff_decoder_bb_0, '0', blocks_unpacked_to_packed_xx_0, '0']
@@ -1793,11 +1767,10 @@ connections:
 - [digital_symbol_sync_xx_0, '1', blocks_null_sink_0_1, '0']
 - [digital_symbol_sync_xx_0, '2', qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, '0']
 - [digital_symbol_sync_xx_0, '3', qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, '1']
-- [iio_pluto_source_0, '0', virtual_sink_2, '0']
+- [iio_pluto_source_0, '0', blocks_multiply_xx_0, '0']
+- [iio_pluto_source_0, '0', qtgui_freq_sink_x_0, '0']
 - [virtual_source_1_0_0, '0', blocks_repack_bits_bb_1_0_1, '0']
 - [virtual_source_1_0_0, '0', qtgui_time_raster_sink_x_0_1_0_0_0, '0']
-- [virtual_source_3, '0', blocks_multiply_xx_0, '0']
-- [virtual_source_3, '0', qtgui_freq_sink_x_0, '0']
 
 metadata:
   file_format: 1
