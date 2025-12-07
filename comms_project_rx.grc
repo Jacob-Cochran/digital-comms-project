@@ -1604,7 +1604,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1576, 1412.0]
+    coordinate: [1512, 1372.0]
     rotation: 0
     state: enabled
 - name: qtgui_freq_sink_x_0
@@ -1642,7 +1642,7 @@ blocks:
     fftsize: 1024*8
     freqhalf: 'True'
     grid: 'False'
-    gui_hint: 1,0,1,4
+    gui_hint: 1,0,1,2
     label: Relative Gain
     label1: Receive Raw
     label10: ''''''
@@ -3196,6 +3196,67 @@ blocks:
     coordinate: [1904, 2904.0]
     rotation: 0
     state: enabled
+- name: qtgui_waterfall_sink_x_0
+  id: qtgui_waterfall_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    fc: center_freq
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: 1,2,1,2
+    int_max: '10'
+    int_min: '-140'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"Received Frequency Raster"'
+    nconnections: '1'
+    showports: 'False'
+    type: complex
+    update_time: '0.10'
+    wintype: window.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1176, 636.0]
+    rotation: 0
+    state: enabled
 - name: virtual_sink_1
   id: virtual_sink
   parameters:
@@ -3460,6 +3521,7 @@ connections:
 - [digital_symbol_sync_xx_0, '3', qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, '1']
 - [iio_pluto_source_0, '0', blocks_multiply_xx_0, '0']
 - [iio_pluto_source_0, '0', qtgui_freq_sink_x_0, '0']
+- [iio_pluto_source_0, '0', qtgui_waterfall_sink_x_0, '0']
 - [virtual_source_1_0_0, '0', blocks_repack_bits_bb_1_0_1, '0']
 - [virtual_source_1_0_0, '0', qtgui_time_raster_sink_x_0_1_0_0_0, '0']
 - [virtual_source_1_0_0_0, '0', correlate_and_crc_validate_0, '0']
