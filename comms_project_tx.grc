@@ -122,7 +122,7 @@ blocks:
     bus_structure: null
     coordinate: [616, 12.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: constellation
   id: variable_constellation
   parameters:
@@ -143,6 +143,26 @@ blocks:
     coordinate: [616, 196.0]
     rotation: 0
     state: disabled
+- name: constellation
+  id: variable_constellation
+  parameters:
+    comment: Differentially encoded 16QAM constellation
+    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
+    dims: '1'
+    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
+    npwr: '1.0'
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]'
+    type: 16qam
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [872, 196.0]
+    rotation: 0
+    state: enabled
 - name: hdr_format
   id: variable
   parameters:

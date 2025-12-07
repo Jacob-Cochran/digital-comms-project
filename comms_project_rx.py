@@ -68,8 +68,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
-        4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
+        self.constellation = constellation = digital.constellation_16qam().base()
         self.constellation.set_npwr(1.0)
         self.ts_packet_size = ts_packet_size = 188
         self.thresh = thresh = 0
