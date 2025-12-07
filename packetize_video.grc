@@ -12,7 +12,7 @@ options:
     gen_linking: dynamic
     generate_options: qt_gui
     hier_block_src_path: '.:'
-    id: test_video
+    id: packetize_video
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -187,6 +187,7 @@ blocks:
     coordinate: [488, 516.0]
     rotation: 0
     state: enabled
+<<<<<<< HEAD
 - name: blocks_repack_bits_bb_0_0
   id: blocks_repack_bits_bb
   parameters:
@@ -227,6 +228,8 @@ blocks:
     coordinate: [808, 740.0]
     rotation: 0
     state: enabled
+=======
+>>>>>>> foobar
 - name: blocks_repack_bits_bb_1_0
   id: blocks_repack_bits_bb
   parameters:
@@ -980,6 +983,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
+<<<<<<< HEAD
     coordinate: [1272, 756.0]
     rotation: 0
     state: enabled
@@ -996,6 +1000,11 @@ blocks:
     coordinate: [152, 748.0]
     rotation: 0
     state: enabled
+=======
+    coordinate: [168, 660.0]
+    rotation: 0
+    state: enabled
+>>>>>>> foobar
 
 connections:
 - [blocks_file_source_0, '0', blocks_throttle2_0, '0']
