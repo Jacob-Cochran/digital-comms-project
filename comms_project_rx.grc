@@ -151,26 +151,6 @@ blocks:
 - name: constellation
   id: variable_constellation
   parameters:
-    comment: Differentially encoded 4QAM constellation
-    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
-    dims: '1'
-    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
-    npwr: '1.0'
-    precision: '8'
-    rot_sym: '4'
-    soft_dec_lut: None
-    sym_map: '[0, 1, 3, 2]'
-    type: calcdist
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [616, 196.0]
-    rotation: 0
-    state: enabled
-- name: constellation
-  id: variable_constellation
-  parameters:
     comment: Differentially encoded 16QAM constellation
     const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
     dims: '1'
@@ -188,6 +168,53 @@ blocks:
     coordinate: [880, 196.0]
     rotation: 0
     state: disabled
+- name: constellation
+  id: variable_constellation
+  parameters:
+    comment: Differentially encoded 16QAM constellation
+    const_points: "[-0.9486832980505138-0.9486832980505138j,\n -0.31622776601683794-0.9486832980505138j,\n\
+      \  0.31622776601683794-0.9486832980505138j,\n  0.9486832980505138-0.9486832980505138j,\n\
+      \n -0.9486832980505138-0.31622776601683794j,\n -0.31622776601683794-0.31622776601683794j,\n\
+      \  0.31622776601683794-0.31622776601683794j,\n  0.9486832980505138-0.31622776601683794j,\n\
+      \n -0.9486832980505138+0.31622776601683794j,\n -0.31622776601683794+0.31622776601683794j,\n\
+      \  0.31622776601683794+0.31622776601683794j,\n  0.9486832980505138+0.31622776601683794j,\n\
+      \n -0.9486832980505138+0.9486832980505138j,\n -0.31622776601683794+0.9486832980505138j,\n\
+      \  0.31622776601683794+0.9486832980505138j,\n  0.9486832980505138+0.9486832980505138j]"
+    dims: '1'
+    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
+    npwr: '1.0'
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]'
+    type: calcdist
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [608, 196.0]
+    rotation: 0
+    state: disabled
+- name: constellation
+  id: variable_constellation
+  parameters:
+    comment: "Base\n 4QAM constellation"
+    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
+    dims: '1'
+    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
+    npwr: '1.0'
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]'
+    type: qpsk
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [880, 292.0]
+    rotation: 0
+    state: enabled
 - name: costas_loop_bandwidth_in_cycles_per_sample
   id: variable_qtgui_range
   parameters:
@@ -440,7 +467,7 @@ blocks:
     bus_structure: null
     coordinate: [2168, 1564.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_multiply_xx_0
   id: blocks_multiply_xx
   parameters:
