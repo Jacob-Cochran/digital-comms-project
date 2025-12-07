@@ -45,6 +45,27 @@ blocks:
     coordinate: [72, 348.0]
     rotation: 0
     state: enabled
+- name: agc_rate
+  id: variable_qtgui_range
+  parameters:
+    comment: 5,2,1,1
+    gui_hint: 5,2,1,1
+    label: ''
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.0001'
+    stop: '1'
+    value: 1e-4
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [504, 764.0]
+    rotation: 0
+    state: enabled
 - name: alpha
   id: variable
   parameters:
@@ -147,7 +168,7 @@ blocks:
     bus_structure: null
     coordinate: [616, 12.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: constellation
   id: variable_constellation
   parameters:
@@ -214,12 +235,12 @@ blocks:
     bus_structure: null
     coordinate: [880, 292.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: costas_loop_bandwidth_in_cycles_per_sample
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: 3,0,1,4
+    gui_hint: 6,2,1,2
     label: ''
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -233,7 +254,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1280, 1524.0]
+    coordinate: [512, 892.0]
     rotation: 0
     state: enabled
 - name: hdr_format
@@ -329,7 +350,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: int(1e6)
+    value: int(4e6)
   states:
     bus_sink: false
     bus_source: false
@@ -361,6 +382,27 @@ blocks:
     coordinate: [112, 124.0]
     rotation: 0
     state: enabled
+- name: timing_error_loop_bandwith
+  id: variable_qtgui_range
+  parameters:
+    comment: 5,3,1,1
+    gui_hint: 5,3,1,1
+    label: ''
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.0001'
+    stop: '1'
+    value: '0.045'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [776, 1164.0]
+    rotation: 0
+    state: enabled
 - name: ts_packet_size
   id: variable
   parameters:
@@ -383,7 +425,7 @@ blocks:
     max_gain: '65536'
     maxoutbuf: '0'
     minoutbuf: '0'
-    rate: 1e-4
+    rate: agc_rate
     reference: '1.0'
     type: complex
   states:
@@ -433,7 +475,7 @@ blocks:
     bus_structure: null
     coordinate: [1320, 2788.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: base_code_correlator_0_0
   id: base_code_correlator
   parameters:
@@ -451,7 +493,7 @@ blocks:
     bus_structure: null
     coordinate: [1320, 2884.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: base_code_correlator_0_0_0
   id: base_code_correlator
   parameters:
@@ -469,7 +511,7 @@ blocks:
     bus_structure: null
     coordinate: [1320, 2988.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: base_code_correlator_0_0_0_0
   id: base_code_correlator
   parameters:
@@ -487,7 +529,7 @@ blocks:
     bus_structure: null
     coordinate: [1320, 3092.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_char_to_float_0
   id: blocks_char_to_float
   parameters:
@@ -504,7 +546,7 @@ blocks:
     bus_structure: null
     coordinate: [4488, 2124.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_char_to_float_0_0
   id: blocks_char_to_float
   parameters:
@@ -539,7 +581,7 @@ blocks:
     bus_structure: null
     coordinate: [4512, 1932.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_multiply_const_vxx_1
   id: blocks_multiply_const_vxx
   parameters:
@@ -557,7 +599,7 @@ blocks:
     bus_structure: null
     coordinate: [2160, 1572.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: blocks_multiply_const_vxx_1_0
   id: blocks_multiply_const_vxx
   parameters:
@@ -575,7 +617,7 @@ blocks:
     bus_structure: null
     coordinate: [2160, 1732.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: blocks_multiply_const_vxx_1_0_0
   id: blocks_multiply_const_vxx
   parameters:
@@ -593,7 +635,7 @@ blocks:
     bus_structure: null
     coordinate: [2168, 1652.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: blocks_multiply_const_vxx_1_1
   id: blocks_multiply_const_vxx
   parameters:
@@ -833,7 +875,7 @@ blocks:
     bus_structure: null
     coordinate: [1616, 2792.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_null_sink_4_2_0
   id: blocks_null_sink
   parameters:
@@ -850,7 +892,7 @@ blocks:
     bus_structure: null
     coordinate: [1608, 2888.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_null_sink_4_2_0_0
   id: blocks_null_sink
   parameters:
@@ -867,7 +909,7 @@ blocks:
     bus_structure: null
     coordinate: [1600, 2992.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_null_sink_4_2_0_0_0
   id: blocks_null_sink
   parameters:
@@ -884,7 +926,7 @@ blocks:
     bus_structure: null
     coordinate: [1600, 3096.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_repack_bits_bb_1_0_0_0_0
   id: blocks_repack_bits_bb
   parameters:
@@ -904,7 +946,7 @@ blocks:
     bus_structure: null
     coordinate: [4016, 1940.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_repack_bits_bb_1_0_1
   id: blocks_repack_bits_bb
   parameters:
@@ -924,7 +966,7 @@ blocks:
     bus_structure: null
     coordinate: [3432, 1940.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_skiphead_0_0
   id: blocks_skiphead
   parameters:
@@ -959,7 +1001,7 @@ blocks:
     bus_structure: null
     coordinate: [4016, 2096.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_uchar_to_float_0_0_1_0
   id: blocks_uchar_to_float
   parameters:
@@ -974,7 +1016,7 @@ blocks:
     bus_structure: null
     coordinate: [3664, 2096.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_unpack_k_bits_bb_0
   id: blocks_unpack_k_bits_bb
   parameters:
@@ -1028,7 +1070,7 @@ blocks:
     bus_structure: null
     coordinate: [2592, 1484.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_unpacked_to_packed_xx_0_0_0
   id: blocks_unpacked_to_packed_xx
   parameters:
@@ -1047,7 +1089,7 @@ blocks:
     bus_structure: null
     coordinate: [2592, 1724.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_unpacked_to_packed_xx_0_0_1
   id: blocks_unpacked_to_packed_xx
   parameters:
@@ -1066,7 +1108,7 @@ blocks:
     bus_structure: null
     coordinate: [2592, 1564.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_unpacked_to_packed_xx_0_0_2
   id: blocks_unpacked_to_packed_xx
   parameters:
@@ -1084,6 +1126,25 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [2592, 1644.0]
+    rotation: 0
+    state: disabled
+- name: blocks_unpacked_to_packed_xx_0_1
+  id: blocks_unpacked_to_packed_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    bits_per_chunk: constellation.bits_per_symbol()
+    comment: ''
+    endianness: gr.GR_MSB_FIRST
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2800, 1388.0]
     rotation: 0
     state: enabled
 - name: correlate_and_crc_validate_0
@@ -1173,7 +1234,7 @@ blocks:
     bus_structure: null
     coordinate: [2360, 1492.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: digital_constellation_decoder_cb_0_0
   id: digital_constellation_decoder_cb
   parameters:
@@ -1189,7 +1250,7 @@ blocks:
     bus_structure: null
     coordinate: [2352, 1572.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: digital_constellation_decoder_cb_0_0_0
   id: digital_constellation_decoder_cb
   parameters:
@@ -1205,7 +1266,7 @@ blocks:
     bus_structure: null
     coordinate: [2360, 1652.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: digital_constellation_decoder_cb_0_0_0_0
   id: digital_constellation_decoder_cb
   parameters:
@@ -1221,7 +1282,7 @@ blocks:
     bus_structure: null
     coordinate: [2352, 1732.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: digital_constellation_receiver_cb_0
   id: digital_constellation_receiver_cb
   parameters:
@@ -1262,7 +1323,7 @@ blocks:
     bus_structure: null
     coordinate: [3696, 1932.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: digital_costas_loop_cc_0
   id: digital_costas_loop_cc
   parameters:
@@ -1298,7 +1359,7 @@ blocks:
     bus_structure: null
     coordinate: [4224, 1932.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: digital_diff_decoder_bb_0
   id: digital_diff_decoder_bb
   parameters:
@@ -1316,6 +1377,23 @@ blocks:
     coordinate: [1640, 1092.0]
     rotation: 0
     state: disabled
+- name: digital_diff_decoder_bb_0_0
+  id: digital_diff_decoder_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    coding: digital.DIFF_DIFFERENTIAL
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    modulus: constellation.arity()
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2592, 1388.0]
+    rotation: 0
+    state: enabled
 - name: digital_fll_band_edge_cc_0
   id: digital_fll_band_edge_cc
   parameters:
@@ -1347,7 +1425,7 @@ blocks:
       \ M&M"
     constellation: constellation
     damping: '1.0'
-    loop_bw: '0.045'
+    loop_bw: timing_error_loop_bandwith
     max_dev: '.1'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -1542,9 +1620,9 @@ blocks:
     color7: '"red"'
     color8: '"red"'
     color9: '"red"'
-    comment: ''
+    comment: 5,0,2,2
     grid: 'False'
-    gui_hint: 4,0,1,4
+    gui_hint: 5,0,2,2
     label1: Sync
     label10: ''
     label2: Costas
@@ -1779,7 +1857,7 @@ blocks:
     color9: '0'
     comment: ''
     grid: 'False'
-    gui_hint: 6,0,1,2
+    gui_hint: 7,0,1,2
     label1: ''
     label10: ''
     label2: ''
@@ -1813,7 +1891,7 @@ blocks:
     bus_structure: null
     coordinate: [3648, 2172.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_time_raster_sink_x_0_1_0_0_0
   id: qtgui_time_raster_sink_x
   parameters:
@@ -1842,7 +1920,7 @@ blocks:
     color9: '0'
     comment: ''
     grid: 'False'
-    gui_hint: 6,2,1,2
+    gui_hint: 7,2,1,2
     label1: ''
     label10: ''
     label2: ''
@@ -1876,7 +1954,7 @@ blocks:
     bus_structure: null
     coordinate: [3648, 2268.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_time_raster_sink_x_0_1_0_0_0_0
   id: qtgui_time_raster_sink_x
   parameters:
@@ -2253,11 +2331,11 @@ blocks:
     color7: yellow
     color8: dark red
     color9: dark green
-    comment: ''
+    comment: 10,0,1,4
     ctrlpanel: 'False'
     entags: 'True'
     grid: 'False'
-    gui_hint: 5,0,1,4
+    gui_hint: 10,0,1,4
     label1: Sync T_inst
     label10: Signal 10
     label2: Sync T_avg
@@ -2354,7 +2432,7 @@ blocks:
     ctrlpanel: 'False'
     entags: 'False'
     grid: 'False'
-    gui_hint: 8,0,1,4
+    gui_hint: 9,0,1,4
     label1: Constellation Receiver Decoded
     label10: Signal 10
     label2: Costas Im
@@ -2419,7 +2497,7 @@ blocks:
     bus_structure: null
     coordinate: [4688, 2100.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_time_sink_x_0_0_0_0_0_0_1_0_1_0
   id: qtgui_time_sink_x
   parameters:
@@ -2839,7 +2917,7 @@ blocks:
     ctrlpanel: 'False'
     entags: 'True'
     grid: 'False'
-    gui_hint: 7,2,1,2
+    gui_hint: 8,2,1,2
     label1: ''
     label10: ''
     label2: ''
@@ -2904,7 +2982,7 @@ blocks:
     bus_structure: null
     coordinate: [4176, 2068.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_time_sink_x_0_2_0_0
   id: qtgui_time_sink_x
   parameters:
@@ -2936,7 +3014,7 @@ blocks:
     ctrlpanel: 'False'
     entags: 'True'
     grid: 'False'
-    gui_hint: 7,0,1,2
+    gui_hint: 8,0,1,2
     label1: ''
     label10: ''
     label2: ''
@@ -3001,7 +3079,7 @@ blocks:
     bus_structure: null
     coordinate: [3824, 2068.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_time_sink_x_0_2_0_0_0
   id: qtgui_time_sink_x
   parameters:
@@ -3195,7 +3273,7 @@ blocks:
     bus_structure: null
     coordinate: [1904, 2904.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_waterfall_sink_x_0
   id: qtgui_waterfall_sink_x
   parameters:
@@ -3282,7 +3360,7 @@ blocks:
     bus_structure: null
     coordinate: [2824, 1492.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_sink_1_0_0
   id: virtual_sink
   parameters:
@@ -3295,7 +3373,7 @@ blocks:
     bus_structure: null
     coordinate: [2816, 1732.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_sink_1_0_1
   id: virtual_sink
   parameters:
@@ -3308,7 +3386,7 @@ blocks:
     bus_structure: null
     coordinate: [2824, 1572.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_sink_1_0_2
   id: virtual_sink
   parameters:
@@ -3321,20 +3399,33 @@ blocks:
     bus_structure: null
     coordinate: [2816, 1652.0]
     rotation: 0
+    state: disabled
+- name: virtual_sink_1_0_3
+  id: virtual_sink
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: pkt_out_bytes_differential
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3008, 1396.0]
+    rotation: 0
     state: enabled
 - name: virtual_source_1_0_0
   id: virtual_source
   parameters:
     alias: ''
     comment: ''
-    stream_id: pkt_out_bytes_1
+    stream_id: pkt_out_bytes_differential
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [3096, 1948.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: virtual_source_1_0_0_0
   id: virtual_source
   parameters:
@@ -3399,7 +3490,7 @@ blocks:
     bus_structure: null
     coordinate: [1048, 2804.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_source_1_0_0_0_2_0
   id: virtual_source
   parameters:
@@ -3412,7 +3503,7 @@ blocks:
     bus_structure: null
     coordinate: [1040, 2900.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_source_1_0_0_0_2_0_0
   id: virtual_source
   parameters:
@@ -3425,7 +3516,7 @@ blocks:
     bus_structure: null
     coordinate: [1040, 3004.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_source_1_0_0_0_2_0_0_0
   id: virtual_source
   parameters:
@@ -3438,7 +3529,7 @@ blocks:
     bus_structure: null
     coordinate: [1040, 3108.0]
     rotation: 0
-    state: enabled
+    state: disabled
 
 connections:
 - [analog_agc_xx_0, '0', digital_fll_band_edge_cc_0, '0']
@@ -3472,6 +3563,7 @@ connections:
 - [blocks_unpacked_to_packed_xx_0_0_0, '0', virtual_sink_1_0_0, '0']
 - [blocks_unpacked_to_packed_xx_0_0_1, '0', virtual_sink_1_0_1, '0']
 - [blocks_unpacked_to_packed_xx_0_0_2, '0', virtual_sink_1_0_2, '0']
+- [blocks_unpacked_to_packed_xx_0_1, '0', virtual_sink_1_0_3, '0']
 - [correlate_and_crc_validate_0, '0', blocks_null_sink_4, '0']
 - [correlate_and_crc_validate_0, '1', qtgui_time_sink_x_0_0_0_0_0_0_1_0_1_0, '0']
 - [correlate_and_crc_validate_0_0, '0', blocks_null_sink_4_0, '0']
@@ -3482,6 +3574,7 @@ connections:
 - [correlate_and_crc_validate_0_1, '0', blocks_null_sink_4_1, '0']
 - [correlate_and_crc_validate_0_1, '1', qtgui_time_sink_x_0_0_0_0_0_0_1_0_1_0_1, '0']
 - [digital_constellation_decoder_cb_0, '0', blocks_unpacked_to_packed_xx_0_0, '0']
+- [digital_constellation_decoder_cb_0, '0', digital_diff_decoder_bb_0_0, '0']
 - [digital_constellation_decoder_cb_0_0, '0', blocks_unpacked_to_packed_xx_0_0_1,
   '0']
 - [digital_constellation_decoder_cb_0_0_0, '0', blocks_unpacked_to_packed_xx_0_0_2,
@@ -3510,6 +3603,7 @@ connections:
 - [digital_diff_decoder_bb_0, '0', blocks_char_to_float_0_0, '0']
 - [digital_diff_decoder_bb_0, '0', blocks_unpack_k_bits_bb_0, '0']
 - [digital_diff_decoder_bb_0, '0', blocks_unpacked_to_packed_xx_0, '0']
+- [digital_diff_decoder_bb_0_0, '0', blocks_unpacked_to_packed_xx_0_1, '0']
 - [digital_fll_band_edge_cc_0, '0', blocks_skiphead_0_0, '0']
 - [digital_fll_band_edge_cc_0, '0', qtgui_freq_sink_x_0, '2']
 - [digital_symbol_sync_xx_0, '0', digital_constellation_receiver_cb_0, '0']
