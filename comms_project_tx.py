@@ -67,8 +67,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
-        4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
+        self.constellation = constellation = digital.constellation_qpsk().base()
         self.constellation.set_npwr(1.0)
         self.ts_packet_size = ts_packet_size = 188
         self.thresh = thresh = 0
@@ -243,11 +242,10 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.iio_pluto_sink_0_0_0.set_attenuation(0, tx_attenuation)
         self.iio_pluto_sink_0_0_0.set_filter_params('Auto', '', 0, 0)
         self.digital_protocol_formatter_bb_0 = digital.protocol_formatter_bb(hdr_format, "packet_len")
-        self.digital_diff_encoder_bb_0 = digital.diff_encoder_bb(constellation.arity(), digital.DIFF_DIFFERENTIAL)
         self.digital_crc32_bb_0 = digital.crc32_bb(False, "packet_len", True)
         self.digital_constellation_modulator_0_0 = digital.generic_mod(
             constellation=constellation,
-            differential=True,
+            differential=False,
             samples_per_symbol=sps,
             pre_diff_code=True,
             excess_bw=alpha,
@@ -272,13 +270,12 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_packed_to_unpacked_xx_0, 0), (self.qtgui_time_raster_sink_x_0_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.digital_crc32_bb_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_packed_to_unpacked_xx_0, 0))
-        self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_diff_encoder_bb_0, 0))
+        self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_constellation_modulator_0_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.qtgui_time_raster_sink_x_0_1_0_0_0_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
         self.connect((self.digital_constellation_modulator_0_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.digital_crc32_bb_0, 0), (self.blocks_tagged_stream_mux_0, 1))
         self.connect((self.digital_crc32_bb_0, 0), (self.digital_protocol_formatter_bb_0, 0))
-        self.connect((self.digital_diff_encoder_bb_0, 0), (self.digital_constellation_modulator_0_0, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
 
 

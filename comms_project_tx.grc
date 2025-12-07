@@ -122,7 +122,7 @@ blocks:
     bus_structure: null
     coordinate: [616, 12.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: constellation
   id: variable_constellation
   parameters:
@@ -170,6 +170,26 @@ blocks:
     coordinate: [616, 204.0]
     rotation: 0
     state: disabled
+- name: constellation
+  id: variable_constellation
+  parameters:
+    comment: "Base\n 4QAM constellation"
+    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
+    dims: '1'
+    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
+    npwr: '1.0'
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]'
+    type: qpsk
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [864, 292.0]
+    rotation: 0
+    state: enabled
 - name: hdr_format
   id: variable
   parameters:
@@ -449,7 +469,7 @@ blocks:
     alias: ''
     comment: ''
     constellation: constellation
-    differential: 'True'
+    differential: 'False'
     excess_bw: alpha
     log: 'False'
     maxoutbuf: '0'
@@ -496,9 +516,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1968, 428.0]
+    coordinate: [1968, 364.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: digital_protocol_formatter_bb_0
   id: digital_protocol_formatter_bb
   parameters:
@@ -888,6 +908,7 @@ connections:
 - [virtual_source_0, '0', blocks_tagged_stream_mux_0, '1']
 - [virtual_source_0_0, '0', blocks_tagged_stream_mux_0, '0']
 - [virtual_source_0_0_0, '0', blocks_packed_to_unpacked_xx_0, '0']
+- [virtual_source_0_0_0, '0', digital_constellation_modulator_0_0, '0']
 - [virtual_source_0_0_0, '0', digital_diff_encoder_bb_0, '0']
 - [virtual_source_0_0_0, '0', qtgui_time_raster_sink_x_0_1_0_0_0_0, '0']
 
