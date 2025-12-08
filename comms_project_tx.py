@@ -12,6 +12,7 @@ from PyQt5 import Qt
 from gnuradio import qtgui
 from PyQt5 import QtCore
 from gnuradio import blocks
+import pmt
 from gnuradio import digital
 from gnuradio import fec
 from gnuradio import gr
@@ -506,8 +507,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
             verbose=False,
             log=False,
             truncate=False)
-        self.blocks_vector_source_x_0_0 = blocks.vector_source_b(numpy.zeros(188, dtype=numpy.uint8).tolist(), True, 1, [])
-        self.blocks_vector_source_x_0 = blocks.vector_source_b(numpy.tile(numpy.arange(188, dtype=numpy.uint8), 1000).tolist(), True, 1, [])
         self.blocks_uchar_to_float_1_1_2 = blocks.uchar_to_float()
         self.blocks_uchar_to_float_1_1_1 = blocks.uchar_to_float()
         self.blocks_uchar_to_float_1_1 = blocks.uchar_to_float()
@@ -515,16 +514,18 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.blocks_uchar_to_float_0 = blocks.uchar_to_float()
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
         self.blocks_stream_to_tagged_stream_0_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_length, "packet_len")
-        self.blocks_stream_mux_0 = blocks.stream_mux(gr.sizeof_char*1, (188, 188))
         self.blocks_repack_bits_bb_1_0_0_0_0_0_0 = blocks.repack_bits_bb(1, 8, "packet_len", False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_1_0_0_0_0_0 = blocks.repack_bits_bb(8, 1, "packet_len", False, gr.GR_MSB_FIRST)
         self.blocks_packed_to_unpacked_xx_0 = blocks.packed_to_unpacked_bb(1, gr.GR_MSB_FIRST)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(0.3)
+        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, video_file, True, 0, 0)
+        self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
 
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.blocks_file_source_0_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.iio_pluto_sink_0_0_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.qtgui_time_sink_x_0_1, 0))
         self.connect((self.blocks_packed_to_unpacked_xx_0, 0), (self.qtgui_time_raster_sink_x_0_0, 0))
@@ -532,7 +533,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))
         self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0), (self.blocks_uchar_to_float_1_1, 0))
         self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0), (self.digital_protocol_formatter_bb_0_0, 0))
-        self.connect((self.blocks_stream_mux_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.blocks_uchar_to_float_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.digital_crc32_bb_0_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_packed_to_unpacked_xx_0, 0))
@@ -545,8 +545,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_uchar_to_float_1_1, 0), (self.qtgui_time_sink_x_1_1, 0))
         self.connect((self.blocks_uchar_to_float_1_1_1, 0), (self.qtgui_time_sink_x_1_1_1, 0))
         self.connect((self.blocks_uchar_to_float_1_1_2, 0), (self.qtgui_time_sink_x_1_1_2, 0))
-        self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_stream_mux_0, 0))
-        self.connect((self.blocks_vector_source_x_0_0, 0), (self.blocks_stream_mux_0, 1))
         self.connect((self.digital_constellation_modulator_0_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.digital_crc32_bb_0_0, 0), (self.blocks_repack_bits_bb_1_0_0_0_0_0, 0))
         self.connect((self.digital_crc32_bb_0_0, 0), (self.blocks_uchar_to_float_1_1_1, 0))
@@ -647,6 +645,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
 
     def set_video_file(self, video_file):
         self.video_file = video_file
+        self.blocks_file_source_0_0.open(self.video_file, True)
 
     def get_tx_attenuation(self):
         return self.tx_attenuation
@@ -666,7 +665,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.blocks_throttle2_0.set_sample_rate((self.samp_rate/10))
         self.iio_pluto_sink_0_0_0.set_bandwidth(int(self.samp_rate))
         self.iio_pluto_sink_0_0_0.set_samplerate(int(self.samp_rate))
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)

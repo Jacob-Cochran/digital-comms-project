@@ -606,7 +606,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1487, 2125]
+    coordinate: [1360, 1920]
     rotation: 0
     state: enabled
 - name: blocks_file_sink_0_0_0
@@ -730,7 +730,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1956, 2117]
+    coordinate: [1829, 1912]
     rotation: 0
     state: enabled
 - name: blocks_repack_bits_bb_1_0_0_0_0
@@ -790,7 +790,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1331, 2233]
+    coordinate: [1264, 2074]
     rotation: 0
     state: enabled
 - name: blocks_repack_bits_bb_1_0_1
@@ -905,7 +905,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1563, 2301]
+    coordinate: [1496, 2142]
     rotation: 0
     state: enabled
 - name: blocks_uchar_to_float_1_0
@@ -920,7 +920,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2191, 2129]
+    coordinate: [2064, 1924]
     rotation: 0
     state: enabled
 - name: blocks_unpacked_to_packed_xx_0_1
@@ -1010,7 +1010,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1872, 1732]
+    coordinate: [1870, 1728]
     rotation: 0
     state: enabled
 - name: digital_diff_decoder_bb_0_0
@@ -1063,7 +1063,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1343, 2125]
+    coordinate: [1216, 1920]
     rotation: 0
     state: enabled
 - name: digital_symbol_sync_xx_0
@@ -1114,7 +1114,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1663, 2093]
+    coordinate: [1536, 1888]
     rotation: 0
     state: enabled
 - name: iio_pluto_source_0
@@ -2195,7 +2195,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1770, 2274]
+    coordinate: [1703, 2115]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_1_0
@@ -2292,7 +2292,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2387, 2101]
+    coordinate: [2260, 1896]
     rotation: 0
     state: enabled
 - name: qtgui_waterfall_sink_x_0

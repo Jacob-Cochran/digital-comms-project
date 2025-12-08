@@ -456,7 +456,7 @@ blocks:
     bus_structure: null
     coordinate: [64, 428.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_multiply_const_vxx_0
   id: blocks_multiply_const_vxx
   parameters:
@@ -552,7 +552,7 @@ blocks:
     bus_structure: null
     coordinate: [352, 608.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_stream_to_tagged_stream_0_0
   id: blocks_stream_to_tagged_stream
   parameters:
@@ -612,7 +612,7 @@ blocks:
     bus_structure: null
     coordinate: [350, 504]
     rotation: 0
-    state: bypassed
+    state: disabled
 - name: blocks_uchar_to_float_0
   id: blocks_uchar_to_float
   parameters:
@@ -707,7 +707,7 @@ blocks:
     bus_structure: null
     coordinate: [72, 636.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_vector_source_x_0_0
   id: blocks_vector_source_x
   parameters:
@@ -727,7 +727,7 @@ blocks:
     bus_structure: null
     coordinate: [64, 740.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: digital_constellation_modulator_0_0
   id: digital_constellation_modulator
   parameters:
