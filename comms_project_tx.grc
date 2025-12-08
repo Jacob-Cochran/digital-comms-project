@@ -1627,7 +1627,6 @@ connections:
 - [blocks_repack_bits_bb_0_0, '0', qtgui_time_raster_sink_x_0_1_0_0_0_0_0_0, '0']
 - [blocks_repack_bits_bb_0_1, '0', qtgui_time_raster_sink_x_0_1_0_0_0_0_0_1, '0']
 - [blocks_stream_mux_0, '0', blocks_throttle2_0, '0']
-- [blocks_stream_to_tagged_stream_0_0, '0', blocks_repack_bits_bb_0, '0']
 - [blocks_stream_to_tagged_stream_0_0, '0', blocks_uchar_to_float_0, '0']
 - [blocks_stream_to_tagged_stream_0_0, '0', digital_crc32_bb_0, '0']
 - [blocks_stream_to_tagged_stream_0_0, '0', qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2,
