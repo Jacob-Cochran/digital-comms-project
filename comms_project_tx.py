@@ -67,7 +67,8 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.constellation = constellation = digital.constellation_qpsk().base()
+        self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
+        4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
         self.constellation.set_npwr(1.0)
         self.ts_packet_size = ts_packet_size = 188
         self.thresh = thresh = 0
@@ -78,9 +79,8 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.sps = sps = 16
         self.samp_rate = samp_rate = int(1e6)
         self.packet_length = packet_length = packet_groups*ts_packet_size
-        self.out_frame_sync_cols = out_frame_sync_cols = 200
-        self.in_frame_sync_cols = in_frame_sync_cols = 200
         self.hdr_format = hdr_format = digital.header_format_default(access_key, thresh, bps)
+        self.frame_sync_cols = frame_sync_cols = 200
         self.center_freq = center_freq = 915e6
         self.alpha = alpha = 0.45
 
@@ -91,12 +91,9 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self._tx_attenuation_range = qtgui.Range(0, 89, 1, 10, 200)
         self._tx_attenuation_win = qtgui.RangeWidget(self._tx_attenuation_range, self.set_tx_attenuation, "'tx_attenuation'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._tx_attenuation_win)
-        self._out_frame_sync_cols_range = qtgui.Range(0, 40000, 1, 200, 200)
-        self._out_frame_sync_cols_win = qtgui.RangeWidget(self._out_frame_sync_cols_range, self.set_out_frame_sync_cols, "'out_frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._out_frame_sync_cols_win)
-        self._in_frame_sync_cols_range = qtgui.Range(0, 40000, 1, 200, 200)
-        self._in_frame_sync_cols_win = qtgui.RangeWidget(self._in_frame_sync_cols_range, self.set_in_frame_sync_cols, "'in_frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._in_frame_sync_cols_win)
+        self._frame_sync_cols_range = qtgui.Range(0, 40000, 1, 200, 200)
+        self._frame_sync_cols_win = qtgui.RangeWidget(self._frame_sync_cols_range, self.set_frame_sync_cols, "'frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._frame_sync_cols_win)
         self.qtgui_time_sink_x_0_1 = qtgui.time_sink_c(
             1024, #size
             samp_rate, #samp_rate
@@ -155,7 +152,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.qtgui_time_raster_sink_x_0_1_0_0_0_0 = qtgui.time_raster_sink_b(
             samp_rate,
             64,
-            out_frame_sync_cols,
+            frame_sync_cols,
             [],
             [],
             " Transmit Frames Bytes",
@@ -196,7 +193,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.qtgui_time_raster_sink_x_0_0 = qtgui.time_raster_sink_b(
             samp_rate,
             64,
-            (in_frame_sync_cols*8),
+            (frame_sync_cols*8),
             [],
             [],
             "Transmit Frames Bits",
@@ -245,7 +242,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.digital_crc32_bb_0 = digital.crc32_bb(False, "packet_len", True)
         self.digital_constellation_modulator_0_0 = digital.generic_mod(
             constellation=constellation,
-            differential=False,
+            differential=True,
             samples_per_symbol=sps,
             pre_diff_code=True,
             excess_bw=alpha,
@@ -359,26 +356,20 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.blocks_stream_to_tagged_stream_0_0.set_packet_len(self.packet_length)
         self.blocks_stream_to_tagged_stream_0_0.set_packet_len_pmt(self.packet_length)
 
-    def get_out_frame_sync_cols(self):
-        return self.out_frame_sync_cols
-
-    def set_out_frame_sync_cols(self, out_frame_sync_cols):
-        self.out_frame_sync_cols = out_frame_sync_cols
-        self.qtgui_time_raster_sink_x_0_1_0_0_0_0.set_num_cols(self.out_frame_sync_cols)
-
-    def get_in_frame_sync_cols(self):
-        return self.in_frame_sync_cols
-
-    def set_in_frame_sync_cols(self, in_frame_sync_cols):
-        self.in_frame_sync_cols = in_frame_sync_cols
-        self.qtgui_time_raster_sink_x_0_0.set_num_cols((self.in_frame_sync_cols*8))
-
     def get_hdr_format(self):
         return self.hdr_format
 
     def set_hdr_format(self, hdr_format):
         self.hdr_format = hdr_format
         self.digital_protocol_formatter_bb_0.set_header_format(self.hdr_format)
+
+    def get_frame_sync_cols(self):
+        return self.frame_sync_cols
+
+    def set_frame_sync_cols(self, frame_sync_cols):
+        self.frame_sync_cols = frame_sync_cols
+        self.qtgui_time_raster_sink_x_0_0.set_num_cols((self.frame_sync_cols*8))
+        self.qtgui_time_raster_sink_x_0_1_0_0_0_0.set_num_cols(self.frame_sync_cols)
 
     def get_center_freq(self):
         return self.center_freq

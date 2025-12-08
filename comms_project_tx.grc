@@ -122,7 +122,7 @@ blocks:
     bus_structure: null
     coordinate: [616, 12.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: constellation
   id: variable_constellation
   parameters:
@@ -189,20 +189,8 @@ blocks:
     bus_structure: null
     coordinate: [864, 292.0]
     rotation: 0
-    state: enabled
-- name: hdr_format
-  id: variable
-  parameters:
-    comment: header_format_default
-    value: digital.header_format_default(access_key, thresh, bps)
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [264, 348.0]
-    rotation: 0
-    state: enabled
-- name: in_frame_sync_cols
+    state: disabled
+- name: frame_sync_cols
   id: variable_qtgui_range
   parameters:
     comment: "Represents the time raster to ensure that packet\nallignment works ideally\
@@ -224,26 +212,16 @@ blocks:
     coordinate: [1560, 12.0]
     rotation: 0
     state: enabled
-- name: out_frame_sync_cols
-  id: variable_qtgui_range
+- name: hdr_format
+  id: variable
   parameters:
-    comment: "Represents the time raster to ensure that packet\nallignment works ideally\
-      \ should should leading \ncolumns gaps indicating low BER."
-    gui_hint: ''
-    label: ''
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: int
-    start: '0'
-    step: '1'
-    stop: '40000'
-    value: '200'
-    widget: counter_slider
+    comment: header_format_default
+    value: digital.header_format_default(access_key, thresh, bps)
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1872, 20.0]
+    coordinate: [264, 348.0]
     rotation: 0
     state: enabled
 - name: packet_groups
@@ -469,7 +447,7 @@ blocks:
     alias: ''
     comment: ''
     constellation: constellation
-    differential: 'False'
+    differential: 'True'
     excess_bw: alpha
     log: 'False'
     maxoutbuf: '0'
@@ -502,23 +480,6 @@ blocks:
     coordinate: [864, 444.0]
     rotation: 0
     state: enabled
-- name: digital_diff_encoder_bb_0
-  id: digital_diff_encoder_bb
-  parameters:
-    affinity: ''
-    alias: ''
-    coding: digital.DIFF_DIFFERENTIAL
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    modulus: constellation.arity()
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1968, 364.0]
-    rotation: 0
-    state: disabled
 - name: digital_protocol_formatter_bb_0
   id: digital_protocol_formatter_bb
   parameters:
@@ -629,7 +590,7 @@ blocks:
     label9: ''
     mult: '[]'
     name: '"Transmit Frames Bits"'
-    ncols: in_frame_sync_cols*8
+    ncols: frame_sync_cols*8
     nconnections: '1'
     nrows: '64'
     offset: '[]'
@@ -692,7 +653,7 @@ blocks:
     label9: ''
     mult: '[]'
     name: '" Transmit Frames Bytes"'
-    ncols: out_frame_sync_cols
+    ncols: frame_sync_cols
     nconnections: '1'
     nrows: '64'
     offset: '[]'
@@ -903,13 +864,11 @@ connections:
 - [digital_constellation_modulator_0_0, '0', blocks_multiply_const_vxx_0, '0']
 - [digital_crc32_bb_0, '0', digital_protocol_formatter_bb_0, '0']
 - [digital_crc32_bb_0, '0', virtual_sink_0, '0']
-- [digital_diff_encoder_bb_0, '0', digital_constellation_modulator_0_0, '0']
 - [digital_protocol_formatter_bb_0, '0', virtual_sink_0_0, '0']
 - [virtual_source_0, '0', blocks_tagged_stream_mux_0, '1']
 - [virtual_source_0_0, '0', blocks_tagged_stream_mux_0, '0']
 - [virtual_source_0_0_0, '0', blocks_packed_to_unpacked_xx_0, '0']
 - [virtual_source_0_0_0, '0', digital_constellation_modulator_0_0, '0']
-- [virtual_source_0_0_0, '0', digital_diff_encoder_bb_0, '0']
 - [virtual_source_0_0_0, '0', qtgui_time_raster_sink_x_0_1_0_0_0_0, '0']
 
 metadata:
