@@ -1,0 +1,19 @@
+#/bin/bash
+
+FILE_PATH=./video.ts
+
+# Create FIFO if it doesn't exist
+if [[ ! -p "$FILE_PATH" ]]; then
+    mkfifo "$FILE_PATH"
+fi
+
+
+rpicam-vid -t 0 --inline \
+  --vflip --hflip \
+  --nopreview \
+  --codec h264 --level 4.1 \
+  --width 1280 --height 720 --framerate 30 \
+  -o - --libav-format h264 \
+| ffmpeg -y -f h264 -i - -c copy -f mpegts $FILE_PATH
+
+# python comms_project_tx.py
