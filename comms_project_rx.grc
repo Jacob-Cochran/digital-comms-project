@@ -45,6 +45,48 @@ blocks:
     coordinate: [72, 348.0]
     rotation: 0
     state: enabled
+- name: after_correlate_tag
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: ''
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: int
+    start: '0'
+    step: '1'
+    stop: '1600'
+    value: '192'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1592, 1580.0]
+    rotation: 0
+    state: enabled
+- name: after_crc
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: ''
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: int
+    start: '0'
+    step: '1'
+    stop: '1600'
+    value: '188'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2272, 1580.0]
+    rotation: 0
+    state: enabled
 - name: agc_rate
   id: variable_qtgui_range
   parameters:
@@ -257,6 +299,28 @@ blocks:
     coordinate: [512, 892.0]
     rotation: 0
     state: enabled
+- name: frame_sync_cols
+  id: variable_qtgui_range
+  parameters:
+    comment: "Represents the time raster to ensure that packet\nallignment works ideally\
+      \ should should leading \ncolumns gaps indicating low BER."
+    gui_hint: ''
+    label: ''
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: int
+    start: '0'
+    step: '1'
+    stop: '1600'
+    value: '200'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1520, 12.0]
+    rotation: 0
+    state: enabled
 - name: hdr_format
   id: variable
   parameters:
@@ -281,28 +345,6 @@ blocks:
     coordinate: [792, 1300.0]
     rotation: 0
     state: true
-- name: out_frame_sync_cols
-  id: variable_qtgui_range
-  parameters:
-    comment: "Represents the time raster to ensure that packet\nallignment works ideally\
-      \ should should leading \ncolumns gaps indicating low BER."
-    gui_hint: ''
-    label: ''
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: int
-    start: '0'
-    step: '1'
-    stop: '1600'
-    value: '200'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1520, 12.0]
-    rotation: 0
-    state: enabled
 - name: packet_groups
   id: variable
   parameters:
@@ -472,7 +514,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1872, 1916.0]
+    coordinate: [1920, 1916.0]
     rotation: 0
     state: enabled
 - name: blocks_file_sink_0_0_0
@@ -490,7 +532,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1896, 1724.0]
+    coordinate: [1944, 1724.0]
     rotation: 0
     state: disabled
 - name: blocks_multiply_xx_0
@@ -597,6 +639,26 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1400, 1732.0]
+    rotation: 0
+    state: enabled
+- name: blocks_repack_bits_bb_1_0_0_0_0_0
+  id: blocks_repack_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    align_output: 'False'
+    comment: ''
+    endianness: gr.GR_MSB_FIRST
+    k: '8'
+    l: '1'
+    len_tag_key: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1816, 1612.0]
     rotation: 0
     state: enabled
 - name: blocks_repack_bits_bb_1_0_1
@@ -756,7 +818,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1608, 1724.0]
+    coordinate: [1656, 1724.0]
     rotation: 0
     state: enabled
 - name: digital_diff_decoder_bb_0_0
@@ -1097,7 +1159,7 @@ blocks:
     label9: ''
     mult: '[]'
     name: '"Packet Out Frames Bits"'
-    ncols: out_frame_sync_cols*8
+    ncols: frame_sync_cols*8
     nconnections: '1'
     nrows: '64'
     offset: '[]'
@@ -1160,7 +1222,7 @@ blocks:
     label9: ''
     mult: '[]'
     name: '"Packet Out Frames Bytes"'
-    ncols: out_frame_sync_cols
+    ncols: frame_sync_cols
     nconnections: '1'
     nrows: '64'
     offset: '[]'
@@ -1180,6 +1242,132 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1032, 2060.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_raster_sink_x_0_1_0_0_1
+  id: qtgui_time_raster_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: Has 192 bytes now in the syncronization
+    grid: 'False'
+    gui_hint: ''
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    mult: '[]'
+    name: '"After Correlate Bits"'
+    ncols: after_correlate_tag*8
+    nconnections: '1'
+    nrows: '64'
+    offset: '[]'
+    samp_rate: samp_rate
+    type: byte
+    update_time: '0.10'
+    x_end_value: '0.0'
+    x_label: '""'
+    x_start_value: '0.0'
+    y_end_value: '0.0'
+    y_label: '""'
+    y_start_value: '0.0'
+    zmax: '1'
+    zmin: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1400, 1596.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_raster_sink_x_0_1_0_0_1_0
+  id: qtgui_time_raster_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    grid: 'False'
+    gui_hint: ''
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    mult: '[]'
+    name: '"After CRC"'
+    ncols: after_crc*8
+    nconnections: '1'
+    nrows: '64'
+    offset: '[]'
+    samp_rate: samp_rate
+    type: byte
+    update_time: '0.10'
+    x_end_value: '0.0'
+    x_label: '""'
+    x_start_value: '0.0'
+    y_end_value: '0.0'
+    y_label: '""'
+    y_start_value: '0.0'
+    zmax: '1'
+    zmin: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2064, 1596.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0_0_0_0_0_0_1_0_0
@@ -1373,7 +1561,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2072, 1892.0]
+    coordinate: [2120, 1892.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0_0_0_0_1
@@ -1470,7 +1658,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1560, 1860.0]
+    coordinate: [1584, 1860.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0_2_0_0
@@ -1665,6 +1853,7 @@ connections:
 - [blocks_multiply_xx_0, '0', analog_agc_xx_0, '0']
 - [blocks_multiply_xx_0, '0', qtgui_freq_sink_x_0, '1']
 - [blocks_repack_bits_bb_1_0_0_0_0, '0', digital_crc32_bb_0_0_0_0, '0']
+- [blocks_repack_bits_bb_1_0_0_0_0_0, '0', qtgui_time_raster_sink_x_0_1_0_0_1_0, '0']
 - [blocks_repack_bits_bb_1_0_1, '0', blocks_uchar_to_float_0_0_1_0, '0']
 - [blocks_repack_bits_bb_1_0_1, '0', digital_correlate_access_code_xx_ts_0_0_0, '0']
 - [blocks_repack_bits_bb_1_0_1, '0', qtgui_time_raster_sink_x_0_1_0_0, '0']
@@ -1677,6 +1866,8 @@ connections:
   '0']
 - [digital_correlate_access_code_xx_ts_0_0_0, '0', blocks_uchar_to_float_0_0_0_0_0,
   '0']
+- [digital_correlate_access_code_xx_ts_0_0_0, '0', qtgui_time_raster_sink_x_0_1_0_0_1,
+  '0']
 - [digital_costas_loop_cc_0, '0', digital_constellation_decoder_cb_0, '0']
 - [digital_costas_loop_cc_0, '0', qtgui_const_sink_x_1_0, '1']
 - [digital_costas_loop_cc_0, '1', blocks_null_sink_2, '0']
@@ -1684,6 +1875,7 @@ connections:
 - [digital_costas_loop_cc_0, '3', blocks_null_sink_1, '0']
 - [digital_crc32_bb_0_0_0_0, '0', blocks_char_to_float_0, '0']
 - [digital_crc32_bb_0_0_0_0, '0', blocks_file_sink_0_0_0, '0']
+- [digital_crc32_bb_0_0_0_0, '0', blocks_repack_bits_bb_1_0_0_0_0_0, '0']
 - [digital_diff_decoder_bb_0_0, '0', blocks_unpacked_to_packed_xx_0_1, '0']
 - [digital_fll_band_edge_cc_0, '0', blocks_skiphead_0_0, '0']
 - [digital_fll_band_edge_cc_0, '0', qtgui_freq_sink_x_0, '2']

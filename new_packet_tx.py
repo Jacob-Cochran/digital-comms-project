@@ -26,6 +26,8 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio import gr, pdu
 from gnuradio import iio
+import new_packet_tx_epy_block_0 as epy_block_0  # embedded python block
+import new_packet_tx_epy_block_1 as epy_block_1  # embedded python block
 import sip
 import threading
 
@@ -240,7 +242,6 @@ class new_packet_tx(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 1):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self.pdu_tagged_stream_to_pdu_0 = pdu.tagged_stream_to_pdu(gr.types.byte_t, 'packet_len')
         self.pdu_pdu_to_tagged_stream_0_0 = pdu.pdu_to_tagged_stream(gr.types.byte_t, 'packet_len')
         self.pdu_pdu_to_tagged_stream_0 = pdu.pdu_to_tagged_stream(gr.types.byte_t, 'packet_len')
         self.iio_pluto_sink_0_0_0 = iio.fmcomms2_sink_fc32('192.168.2.1' if '192.168.2.1' else iio.get_pluto_uri(), [True, True], 32768, False)
@@ -252,6 +253,8 @@ class new_packet_tx(gr.top_block, Qt.QWidget):
         self.iio_pluto_sink_0_0_0.set_filter_params('Auto', '', 0, 0)
         self.fec_async_encoder_0_0 = fec.async_encoder(hdr_enc, True, False, False, 1500)
         self.fec_async_encoder_0 = fec.async_encoder(pld_enc, True, False, False, 1500)
+        self.epy_block_1 = epy_block_1.blk(input_port_name='out', output_port_name='pdus')
+        self.epy_block_0 = epy_block_0.blk(packet_len=packet_length)
         self.digital_protocol_formatter_async_0 = digital.protocol_formatter_async(hdr_format)
         self.digital_crc32_async_bb_1 = digital.crc32_async_bb(False)
         self.digital_constellation_modulator_0_0 = digital.generic_mod(
@@ -265,7 +268,6 @@ class new_packet_tx(gr.top_block, Qt.QWidget):
             truncate=False)
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
-        self.blocks_stream_to_tagged_stream_0_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_length, "packet_len")
         self.blocks_packed_to_unpacked_xx_0 = blocks.packed_to_unpacked_bb(1, gr.GR_MSB_FIRST)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(0.3)
         self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, './test_video/mp4sample.ts', True, 0, 0)
@@ -285,18 +287,18 @@ class new_packet_tx(gr.top_block, Qt.QWidget):
         self.msg_connect((self.digital_crc32_async_bb_1, 'out'), (self.fec_async_encoder_0, 'in'))
         self.msg_connect((self.digital_protocol_formatter_async_0, 'header'), (self.fec_async_encoder_0_0, 'in'))
         self.msg_connect((self.digital_protocol_formatter_async_0, 'payload'), (self.pdu_pdu_to_tagged_stream_0, 'pdus'))
+        self.msg_connect((self.epy_block_0, 'in'), (self.digital_crc32_async_bb_1, 'in'))
+        self.msg_connect((self.epy_block_1, 'pdus'), (self.pdu_pdu_to_tagged_stream_0_0, 'pdus'))
         self.msg_connect((self.fec_async_encoder_0, 'out'), (self.digital_protocol_formatter_async_0, 'in'))
-        self.msg_connect((self.fec_async_encoder_0_0, 'out'), (self.pdu_pdu_to_tagged_stream_0_0, 'pdus'))
-        self.msg_connect((self.pdu_tagged_stream_to_pdu_0, 'pdus'), (self.digital_crc32_async_bb_1, 'in'))
+        self.msg_connect((self.fec_async_encoder_0_0, 'out'), (self.epy_block_1, 'in'))
         self.connect((self.blocks_file_source_0_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.iio_pluto_sink_0_0_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.qtgui_time_sink_x_0_1, 0))
         self.connect((self.blocks_packed_to_unpacked_xx_0, 0), (self.qtgui_time_raster_sink_x_0_0, 0))
-        self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.pdu_tagged_stream_to_pdu_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_packed_to_unpacked_xx_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_constellation_modulator_0_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.qtgui_time_raster_sink_x_0_1_0_0_0_0, 0))
-        self.connect((self.blocks_throttle2_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
+        self.connect((self.blocks_throttle2_0, 0), (self.epy_block_0, 0))
         self.connect((self.digital_constellation_modulator_0_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.pdu_pdu_to_tagged_stream_0, 0), (self.blocks_tagged_stream_mux_0, 1))
         self.connect((self.pdu_pdu_to_tagged_stream_0_0, 0), (self.blocks_tagged_stream_mux_0, 0))
@@ -388,8 +390,7 @@ class new_packet_tx(gr.top_block, Qt.QWidget):
 
     def set_packet_length(self, packet_length):
         self.packet_length = packet_length
-        self.blocks_stream_to_tagged_stream_0_0.set_packet_len(self.packet_length)
-        self.blocks_stream_to_tagged_stream_0_0.set_packet_len_pmt(self.packet_length)
+        self.epy_block_0.packet_len = self.packet_length
 
     def get_hdr_format(self):
         return self.hdr_format
