@@ -573,12 +573,14 @@ blocks:
   parameters:
     alias: ''
     comment: ''
-    imports: import picamera2
+    imports: 'from picam2_h264_source import picam2_h264_source
+
+      '
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [976, 148.0]
+    coordinate: [960, 236.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_raster_sink_x_0_0

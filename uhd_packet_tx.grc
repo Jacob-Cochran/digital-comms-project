@@ -70,7 +70,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [400, 11]
+    coordinate: [488, 12.0]
     rotation: 0
     state: enabled
 - name: Const_PLD
@@ -90,7 +90,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [640, 12.0]
+    coordinate: [752, 12.0]
     rotation: 0
     state: disabled
 - name: amp
@@ -246,7 +246,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [880, 12.0]
+    coordinate: [1000, 12.0]
     rotation: 0
     state: disabled
 - name: hdr_format
@@ -259,7 +259,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [880, 116.0]
+    coordinate: [1000, 116.0]
     rotation: 0
     state: enabled
 - name: k
@@ -295,7 +295,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1400, 44.0]
+    coordinate: [1520, 44.0]
     rotation: 0
     state: enabled
 - name: polys
@@ -381,7 +381,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1072, 44.0]
+    coordinate: [1192, 44.0]
     rotation: 0
     state: enabled
 - name: blocks_message_debug_0
@@ -796,7 +796,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1224, 44.0]
+    coordinate: [1344, 44.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_sink_0
@@ -1073,7 +1073,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1368, 156.0]
+    coordinate: [1488, 156.0]
     rotation: 0
     state: disabled
 

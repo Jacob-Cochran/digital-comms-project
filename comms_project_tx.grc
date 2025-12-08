@@ -493,6 +493,22 @@ blocks:
     coordinate: [1144, 484.0]
     rotation: 0
     state: true
+- name: digital_protocol_parser_b_0
+  id: digital_protocol_parser_b
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    format: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [976, 404.0]
+    rotation: 0
+    state: enabled
 - name: iio_pluto_sink_0_0_0
   id: iio_pluto_sink
   parameters:
