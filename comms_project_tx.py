@@ -92,15 +92,12 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self._tx_attenuation_range = qtgui.Range(0, 89, 1, 10, 200)
         self._tx_attenuation_win = qtgui.RangeWidget(self._tx_attenuation_range, self.set_tx_attenuation, "'tx_attenuation'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._tx_attenuation_win)
-<<<<<<< HEAD
+        self._frame_sync_cols_range = qtgui.Range(0, 2000, 1, 200, 200)
+        self._frame_sync_cols_win = qtgui.RangeWidget(self._frame_sync_cols_range, self.set_frame_sync_cols, "'frame_sync_cols'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._frame_sync_cols_win)
         self._raw_data_sync_range = qtgui.Range(0, 40000, 1, 188, 200)
         self._raw_data_sync_win = qtgui.RangeWidget(self._raw_data_sync_range, self.set_raw_data_sync, "'raw_data_sync'", "counter_slider", int, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._raw_data_sync_win)
-=======
->>>>>>> origin/local-rx-branch
-        self._frame_sync_cols_range = qtgui.Range(0, 40000, 1, 200, 200)
-        self._frame_sync_cols_win = qtgui.RangeWidget(self._frame_sync_cols_range, self.set_frame_sync_cols, "'frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._frame_sync_cols_win)
         self.qtgui_time_sink_x_0_1 = qtgui.time_sink_c(
             1024, #size
             samp_rate, #samp_rate
@@ -300,43 +297,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
-        self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2 = qtgui.time_raster_sink_b(
-            samp_rate,
-            64,
-            raw_data_sync,
-            [],
-            [],
-            " Transmit Payload Bytes",
-            1,
-            None
-        )
-
-        self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.set_update_time(0.10)
-        self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.set_intensity_range(0, 1)
-        self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.enable_grid(False)
-        self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.enable_axis_labels(True)
-        self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.set_x_label("")
-        self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.set_x_range(0.0, 0.0)
-        self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.set_y_label("")
-        self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.set_y_range(0.0, 0.0)
-
-        labels = ['', '', '', '', '',
-            '', '', '', '', '']
-        colors = [0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.set_line_label(i, labels[i])
-            self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.set_color_map(i, colors[i])
-            self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2_win = sip.wrapinstance(self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.qwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2_win)
         self.qtgui_time_raster_sink_x_0_1_0_0_0_0 = qtgui.time_raster_sink_b(
             samp_rate,
             64,
@@ -458,7 +418,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_stream_mux_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.blocks_uchar_to_float_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.digital_crc32_bb_0, 0))
-        self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_packed_to_unpacked_xx_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_uchar_to_float_0_0_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_constellation_modulator_0_0, 0))
@@ -561,7 +520,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
 
     def set_raw_data_sync(self, raw_data_sync):
         self.raw_data_sync = raw_data_sync
-        self.qtgui_time_raster_sink_x_0_1_0_0_0_0_0_2.set_num_cols(self.raw_data_sync)
 
     def get_packet_length(self):
         return self.packet_length

@@ -123,7 +123,6 @@ blocks:
     coordinate: [616, 12.0]
     rotation: 0
     state: enabled
-    state: enabled
 - name: constellation
   id: variable_constellation
   parameters:
@@ -196,7 +195,16 @@ blocks:
   id: variable_qtgui_range
   parameters:
     comment: header_format_default
-    value: digital.header_format_default(access_key, thresh, bps)
+    gui_hint: ''
+    label: ''
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '1'
+    stop: '2000'
+    value: '200'
+    widget: counter_slider
   states:
     bus_sink: false
     bus_source: false
@@ -811,7 +819,6 @@ blocks:
     mult: '[]'
     name: '"Transmit Frames Bits"'
     ncols: frame_sync_cols*8
-    ncols: frame_sync_cols*8
     nconnections: '1'
     nrows: '64'
     offset: '[]'
@@ -874,7 +881,6 @@ blocks:
     label9: ''
     mult: '[]'
     name: '" Transmit Frames Bytes"'
-    ncols: frame_sync_cols
     ncols: frame_sync_cols
     nconnections: '1'
     nrows: '64'
@@ -1148,7 +1154,7 @@ blocks:
     bus_structure: null
     coordinate: [840, 876.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
