@@ -89,8 +89,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.cfo_offset = cfo_offset = 200
         self.center_freq = center_freq = 915e6
         self.agc_rate = agc_rate = 1e-4
-        self.after_crc = after_crc = 188
-        self.after_correlate_tag = after_correlate_tag = 192
 
         ##################################################
         # Blocks
@@ -103,9 +101,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(3, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self._frame_sync_cols_range = qtgui.Range(0, 1600, 1, 200, 200)
-        self._frame_sync_cols_win = qtgui.RangeWidget(self._frame_sync_cols_range, self.set_frame_sync_cols, "'frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._frame_sync_cols_win)
         self._costas_loop_bandwidth_in_cycles_per_sample_range = qtgui.Range(0.0001, 0.2, 0.0001, 0.01, 200)
         self._costas_loop_bandwidth_in_cycles_per_sample_win = qtgui.RangeWidget(self._costas_loop_bandwidth_in_cycles_per_sample_range, self.set_costas_loop_bandwidth_in_cycles_per_sample, "'costas_loop_bandwidth_in_cycles_per_sample'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_grid_layout.addWidget(self._costas_loop_bandwidth_in_cycles_per_sample_win, 6, 2, 1, 2)
@@ -127,12 +122,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(2, 3):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self._after_crc_range = qtgui.Range(0, 1600, 1, 188, 200)
-        self._after_crc_win = qtgui.RangeWidget(self._after_crc_range, self.set_after_crc, "'after_crc'", "counter_slider", int, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._after_crc_win)
-        self._after_correlate_tag_range = qtgui.Range(0, 1600, 1, 192, 200)
-        self._after_correlate_tag_win = qtgui.RangeWidget(self._after_correlate_tag_range, self.set_after_correlate_tag, "'after_correlate_tag'", "counter_slider", int, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._after_correlate_tag_win)
         self.qtgui_waterfall_sink_x_0 = qtgui.waterfall_sink_c(
             1024, #size
             window.WIN_BLACKMAN_hARRIS, #wintype
@@ -169,110 +158,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
 
         self.top_grid_layout.addWidget(self._qtgui_waterfall_sink_x_0_win, 1, 2, 1, 2)
         for r in range(1, 2):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(2, 4):
-            self.top_grid_layout.setColumnStretch(c, 1)
-        self.qtgui_time_sink_x_0_2_0_0 = qtgui.time_sink_f(
-            256, #size
-            samp_rate, #samp_rate
-            'Correlate input', #name
-            1, #number of inputs
-            None # parent
-        )
-        self.qtgui_time_sink_x_0_2_0_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0_2_0_0.set_y_axis(-0.1, 1.1)
-
-        self.qtgui_time_sink_x_0_2_0_0.set_y_label('Amplitude', "")
-
-        self.qtgui_time_sink_x_0_2_0_0.enable_tags(True)
-        self.qtgui_time_sink_x_0_2_0_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.2, 0.0, 0, "packet_len")
-        self.qtgui_time_sink_x_0_2_0_0.enable_autoscale(False)
-        self.qtgui_time_sink_x_0_2_0_0.enable_grid(False)
-        self.qtgui_time_sink_x_0_2_0_0.enable_axis_labels(True)
-        self.qtgui_time_sink_x_0_2_0_0.enable_control_panel(False)
-        self.qtgui_time_sink_x_0_2_0_0.enable_stem_plot(False)
-
-
-        labels = ['', '', '', '', '',
-            '', '', '', '', '']
-        widths = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        colors = ['blue', 'red', 'green', 'black', 'cyan',
-            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-        styles = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        markers = [-1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1]
-
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_0_2_0_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_sink_x_0_2_0_0.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_0_2_0_0.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_0_2_0_0.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_0_2_0_0.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_0_2_0_0.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_0_2_0_0.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_sink_x_0_2_0_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0_2_0_0.qwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_2_0_0_win, 8, 0, 1, 2)
-        for r in range(8, 9):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(0, 2):
-            self.top_grid_layout.setColumnStretch(c, 1)
-        self.qtgui_time_sink_x_0_0_0_0_1 = qtgui.time_sink_f(
-            256, #size
-            samp_rate, #samp_rate
-            'Correlate Output', #name
-            1, #number of inputs
-            None # parent
-        )
-        self.qtgui_time_sink_x_0_0_0_0_1.set_update_time(0.10)
-        self.qtgui_time_sink_x_0_0_0_0_1.set_y_axis(-0.1, 1.1)
-
-        self.qtgui_time_sink_x_0_0_0_0_1.set_y_label('Amplitude', "")
-
-        self.qtgui_time_sink_x_0_0_0_0_1.enable_tags(True)
-        self.qtgui_time_sink_x_0_0_0_0_1.set_trigger_mode(qtgui.TRIG_MODE_TAG, qtgui.TRIG_SLOPE_POS, 0.1, 0.0, 0, "packet_len")
-        self.qtgui_time_sink_x_0_0_0_0_1.enable_autoscale(False)
-        self.qtgui_time_sink_x_0_0_0_0_1.enable_grid(False)
-        self.qtgui_time_sink_x_0_0_0_0_1.enable_axis_labels(True)
-        self.qtgui_time_sink_x_0_0_0_0_1.enable_control_panel(False)
-        self.qtgui_time_sink_x_0_0_0_0_1.enable_stem_plot(False)
-
-
-        labels = ['', '', '', '', '',
-            '', '', '', '', '']
-        widths = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        colors = ['blue', 'red', 'green', 'black', 'cyan',
-            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-        styles = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        markers = [-1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1]
-
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_0_0_0_0_1.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_sink_x_0_0_0_0_1.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_0_0_0_0_1.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_0_0_0_0_1.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_0_0_0_0_1.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_0_0_0_0_1.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_0_0_0_0_1.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_sink_x_0_0_0_0_1_win = sip.wrapinstance(self.qtgui_time_sink_x_0_0_0_0_1.qwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_0_0_0_1_win, 8, 2, 1, 2)
-        for r in range(8, 9):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(2, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
@@ -380,162 +265,54 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self.qtgui_time_raster_sink_x_0_1_0_0_1_0 = qtgui.time_raster_sink_b(
-            samp_rate,
-            64,
-            (after_crc*8),
-            [],
-            [],
-            "After CRC",
-            1,
-            None
+        self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
+            1024, #size
+            samp_rate, #samp_rate
+            "After Access Code", #name
+            1, #number of inputs
+            None # parent
         )
+        self.qtgui_time_sink_x_0.set_update_time(0.10)
+        self.qtgui_time_sink_x_0.set_y_axis(0, 256)
 
-        self.qtgui_time_raster_sink_x_0_1_0_0_1_0.set_update_time(0.10)
-        self.qtgui_time_raster_sink_x_0_1_0_0_1_0.set_intensity_range(0, 1)
-        self.qtgui_time_raster_sink_x_0_1_0_0_1_0.enable_grid(False)
-        self.qtgui_time_raster_sink_x_0_1_0_0_1_0.enable_axis_labels(True)
-        self.qtgui_time_raster_sink_x_0_1_0_0_1_0.set_x_label("")
-        self.qtgui_time_raster_sink_x_0_1_0_0_1_0.set_x_range(0.0, 0.0)
-        self.qtgui_time_raster_sink_x_0_1_0_0_1_0.set_y_label("")
-        self.qtgui_time_raster_sink_x_0_1_0_0_1_0.set_y_range(0.0, 0.0)
+        self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
-        labels = ['', '', '', '', '',
-            '', '', '', '', '']
-        colors = [0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0]
+        self.qtgui_time_sink_x_0.enable_tags(True)
+        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
+        self.qtgui_time_sink_x_0.enable_autoscale(False)
+        self.qtgui_time_sink_x_0.enable_grid(False)
+        self.qtgui_time_sink_x_0.enable_axis_labels(True)
+        self.qtgui_time_sink_x_0.enable_control_panel(False)
+        self.qtgui_time_sink_x_0.enable_stem_plot(False)
+
+
+        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
+            'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
+        widths = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        colors = ['blue', 'red', 'green', 'black', 'cyan',
+            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
         alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
             1.0, 1.0, 1.0, 1.0, 1.0]
+        styles = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        markers = [-1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1]
+
 
         for i in range(1):
             if len(labels[i]) == 0:
-                self.qtgui_time_raster_sink_x_0_1_0_0_1_0.set_line_label(i, "Data {0}".format(i))
+                self.qtgui_time_sink_x_0.set_line_label(i, "Data {0}".format(i))
             else:
-                self.qtgui_time_raster_sink_x_0_1_0_0_1_0.set_line_label(i, labels[i])
-            self.qtgui_time_raster_sink_x_0_1_0_0_1_0.set_color_map(i, colors[i])
-            self.qtgui_time_raster_sink_x_0_1_0_0_1_0.set_line_alpha(i, alphas[i])
+                self.qtgui_time_sink_x_0.set_line_label(i, labels[i])
+            self.qtgui_time_sink_x_0.set_line_width(i, widths[i])
+            self.qtgui_time_sink_x_0.set_line_color(i, colors[i])
+            self.qtgui_time_sink_x_0.set_line_style(i, styles[i])
+            self.qtgui_time_sink_x_0.set_line_marker(i, markers[i])
+            self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
 
-        self._qtgui_time_raster_sink_x_0_1_0_0_1_0_win = sip.wrapinstance(self.qtgui_time_raster_sink_x_0_1_0_0_1_0.qwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_raster_sink_x_0_1_0_0_1_0_win)
-        self.qtgui_time_raster_sink_x_0_1_0_0_1 = qtgui.time_raster_sink_b(
-            samp_rate,
-            64,
-            (after_correlate_tag*8),
-            [],
-            [],
-            "After Correlate Bits",
-            1,
-            None
-        )
-
-        self.qtgui_time_raster_sink_x_0_1_0_0_1.set_update_time(0.10)
-        self.qtgui_time_raster_sink_x_0_1_0_0_1.set_intensity_range(0, 1)
-        self.qtgui_time_raster_sink_x_0_1_0_0_1.enable_grid(False)
-        self.qtgui_time_raster_sink_x_0_1_0_0_1.enable_axis_labels(True)
-        self.qtgui_time_raster_sink_x_0_1_0_0_1.set_x_label("")
-        self.qtgui_time_raster_sink_x_0_1_0_0_1.set_x_range(0.0, 0.0)
-        self.qtgui_time_raster_sink_x_0_1_0_0_1.set_y_label("")
-        self.qtgui_time_raster_sink_x_0_1_0_0_1.set_y_range(0.0, 0.0)
-
-        labels = ['', '', '', '', '',
-            '', '', '', '', '']
-        colors = [0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_raster_sink_x_0_1_0_0_1.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_raster_sink_x_0_1_0_0_1.set_line_label(i, labels[i])
-            self.qtgui_time_raster_sink_x_0_1_0_0_1.set_color_map(i, colors[i])
-            self.qtgui_time_raster_sink_x_0_1_0_0_1.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_raster_sink_x_0_1_0_0_1_win = sip.wrapinstance(self.qtgui_time_raster_sink_x_0_1_0_0_1.qwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_raster_sink_x_0_1_0_0_1_win)
-        self.qtgui_time_raster_sink_x_0_1_0_0_0 = qtgui.time_raster_sink_b(
-            samp_rate,
-            64,
-            frame_sync_cols,
-            [],
-            [],
-            "Packet Out Frames Bytes",
-            1,
-            None
-        )
-
-        self.qtgui_time_raster_sink_x_0_1_0_0_0.set_update_time(0.10)
-        self.qtgui_time_raster_sink_x_0_1_0_0_0.set_intensity_range(0, 255)
-        self.qtgui_time_raster_sink_x_0_1_0_0_0.enable_grid(False)
-        self.qtgui_time_raster_sink_x_0_1_0_0_0.enable_axis_labels(True)
-        self.qtgui_time_raster_sink_x_0_1_0_0_0.set_x_label("")
-        self.qtgui_time_raster_sink_x_0_1_0_0_0.set_x_range(0.0, 0.0)
-        self.qtgui_time_raster_sink_x_0_1_0_0_0.set_y_label("")
-        self.qtgui_time_raster_sink_x_0_1_0_0_0.set_y_range(0.0, 0.0)
-
-        labels = ['', '', '', '', '',
-            '', '', '', '', '']
-        colors = [0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_raster_sink_x_0_1_0_0_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_raster_sink_x_0_1_0_0_0.set_line_label(i, labels[i])
-            self.qtgui_time_raster_sink_x_0_1_0_0_0.set_color_map(i, colors[i])
-            self.qtgui_time_raster_sink_x_0_1_0_0_0.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_raster_sink_x_0_1_0_0_0_win = sip.wrapinstance(self.qtgui_time_raster_sink_x_0_1_0_0_0.qwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_raster_sink_x_0_1_0_0_0_win, 7, 2, 1, 2)
-        for r in range(7, 8):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(2, 4):
-            self.top_grid_layout.setColumnStretch(c, 1)
-        self.qtgui_time_raster_sink_x_0_1_0_0 = qtgui.time_raster_sink_b(
-            samp_rate,
-            64,
-            (frame_sync_cols*8),
-            [],
-            [],
-            "Packet Out Frames Bits",
-            1,
-            None
-        )
-
-        self.qtgui_time_raster_sink_x_0_1_0_0.set_update_time(0.10)
-        self.qtgui_time_raster_sink_x_0_1_0_0.set_intensity_range(0, 1)
-        self.qtgui_time_raster_sink_x_0_1_0_0.enable_grid(False)
-        self.qtgui_time_raster_sink_x_0_1_0_0.enable_axis_labels(True)
-        self.qtgui_time_raster_sink_x_0_1_0_0.set_x_label("")
-        self.qtgui_time_raster_sink_x_0_1_0_0.set_x_range(0.0, 0.0)
-        self.qtgui_time_raster_sink_x_0_1_0_0.set_y_label("")
-        self.qtgui_time_raster_sink_x_0_1_0_0.set_y_range(0.0, 0.0)
-
-        labels = ['', '', '', '', '',
-            '', '', '', '', '']
-        colors = [0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_raster_sink_x_0_1_0_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_raster_sink_x_0_1_0_0.set_line_label(i, labels[i])
-            self.qtgui_time_raster_sink_x_0_1_0_0.set_color_map(i, colors[i])
-            self.qtgui_time_raster_sink_x_0_1_0_0.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_raster_sink_x_0_1_0_0_win = sip.wrapinstance(self.qtgui_time_raster_sink_x_0_1_0_0.qwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_raster_sink_x_0_1_0_0_win, 7, 0, 1, 2)
-        for r in range(7, 8):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(0, 2):
-            self.top_grid_layout.setColumnStretch(c, 1)
+        self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.qwidget(), Qt.QWidget)
+        self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
         self.qtgui_freq_sink_x_0 = qtgui.freq_sink_c(
             (1024*8), #size
             window.WIN_BLACKMAN_hARRIS, #wintype
@@ -637,6 +414,9 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.iio_pluto_source_0.set_rfdc(True)
         self.iio_pluto_source_0.set_bbdc(True)
         self.iio_pluto_source_0.set_filter_params('Auto', '', 0, 0)
+        self._frame_sync_cols_range = qtgui.Range(0, 1600, 1, 200, 200)
+        self._frame_sync_cols_win = qtgui.RangeWidget(self._frame_sync_cols_range, self.set_frame_sync_cols, "'frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._frame_sync_cols_win)
         self.digital_symbol_sync_xx_0 = digital.symbol_sync_cc(
             digital.TED_SIGNAL_TIMES_SLOPE_ML,
             sps,
@@ -657,11 +437,9 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
           thresh, "packet_len")
         self.digital_constellation_decoder_cb_0 = digital.constellation_decoder_cb(constellation)
         self.blocks_unpacked_to_packed_xx_0_1 = blocks.unpacked_to_packed_bb(constellation.bits_per_symbol(), gr.GR_MSB_FIRST)
-        self.blocks_uchar_to_float_0_0_1_0 = blocks.uchar_to_float()
-        self.blocks_uchar_to_float_0_0_0_0_0 = blocks.uchar_to_float()
+        self.blocks_uchar_to_float_0_0_1_0_0 = blocks.uchar_to_float()
         self.blocks_skiphead_0_0 = blocks.skiphead(gr.sizeof_gr_complex*1, int(samp_rate))
         self.blocks_repack_bits_bb_1_0_1 = blocks.repack_bits_bb(8, 1, "", False, gr.GR_MSB_FIRST)
-        self.blocks_repack_bits_bb_1_0_0_0_0_0 = blocks.repack_bits_bb(8, 1, "packet_len", False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_1_0_0_0_0 = blocks.repack_bits_bb(1, 8, "packet_len", False, gr.GR_MSB_FIRST)
         self.blocks_null_sink_3 = blocks.null_sink(gr.sizeof_float*1)
         self.blocks_null_sink_2 = blocks.null_sink(gr.sizeof_float*1)
@@ -681,35 +459,28 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_char_to_float_0, 0), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_1, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.analog_agc_xx_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.qtgui_freq_sink_x_0, 1))
+        self.connect((self.blocks_repack_bits_bb_1_0_0_0_0, 0), (self.blocks_uchar_to_float_0_0_1_0_0, 0))
         self.connect((self.blocks_repack_bits_bb_1_0_0_0_0, 0), (self.digital_crc32_bb_0_0_0_0, 0))
-        self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0, 0), (self.qtgui_time_raster_sink_x_0_1_0_0_1_0, 0))
-        self.connect((self.blocks_repack_bits_bb_1_0_1, 0), (self.blocks_uchar_to_float_0_0_1_0, 0))
         self.connect((self.blocks_repack_bits_bb_1_0_1, 0), (self.digital_correlate_access_code_xx_ts_0_0_0, 0))
-        self.connect((self.blocks_repack_bits_bb_1_0_1, 0), (self.qtgui_time_raster_sink_x_0_1_0_0, 0))
         self.connect((self.blocks_skiphead_0_0, 0), (self.digital_symbol_sync_xx_0, 0))
-        self.connect((self.blocks_uchar_to_float_0_0_0_0_0, 0), (self.qtgui_time_sink_x_0_0_0_0_1, 0))
-        self.connect((self.blocks_uchar_to_float_0_0_1_0, 0), (self.qtgui_time_sink_x_0_2_0_0, 0))
+        self.connect((self.blocks_uchar_to_float_0_0_1_0_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.blocks_unpacked_to_packed_xx_0_1, 0), (self.blocks_repack_bits_bb_1_0_1, 0))
-        self.connect((self.blocks_unpacked_to_packed_xx_0_1, 0), (self.qtgui_time_raster_sink_x_0_1_0_0_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_diff_decoder_bb_0_0, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0_0_0, 0), (self.blocks_repack_bits_bb_1_0_0_0_0, 0))
-        self.connect((self.digital_correlate_access_code_xx_ts_0_0_0, 0), (self.blocks_uchar_to_float_0_0_0_0_0, 0))
-        self.connect((self.digital_correlate_access_code_xx_ts_0_0_0, 0), (self.qtgui_time_raster_sink_x_0_1_0_0_1, 0))
         self.connect((self.digital_costas_loop_cc_0, 3), (self.blocks_null_sink_1, 0))
         self.connect((self.digital_costas_loop_cc_0, 1), (self.blocks_null_sink_2, 0))
         self.connect((self.digital_costas_loop_cc_0, 2), (self.blocks_null_sink_3, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_constellation_decoder_cb_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_1_0, 1))
         self.connect((self.digital_crc32_bb_0_0_0_0, 0), (self.blocks_char_to_float_0, 0))
-        self.connect((self.digital_crc32_bb_0_0_0_0, 0), (self.blocks_repack_bits_bb_1_0_0_0_0_0, 0))
         self.connect((self.digital_diff_decoder_bb_0_0, 0), (self.blocks_unpacked_to_packed_xx_0_1, 0))
         self.connect((self.digital_fll_band_edge_cc_0, 0), (self.blocks_skiphead_0_0, 0))
         self.connect((self.digital_fll_band_edge_cc_0, 0), (self.qtgui_freq_sink_x_0, 2))
         self.connect((self.digital_symbol_sync_xx_0, 1), (self.blocks_null_sink_0_1, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_costas_loop_cc_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1_0, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 3), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 1))
+        self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_waterfall_sink_x_0, 0))
@@ -763,10 +534,9 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
         self.iio_pluto_source_0.set_samplerate(int(self.samp_rate))
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
+        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_1.set_samp_rate(self.samp_rate)
-        self.qtgui_time_sink_x_0_0_0_0_1.set_samp_rate(self.samp_rate)
-        self.qtgui_time_sink_x_0_2_0_0.set_samp_rate(self.samp_rate)
         self.qtgui_waterfall_sink_x_0.set_frequency_range(self.center_freq, self.samp_rate)
 
     def get_packet_groups(self):
@@ -834,8 +604,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
 
     def set_frame_sync_cols(self, frame_sync_cols):
         self.frame_sync_cols = frame_sync_cols
-        self.qtgui_time_raster_sink_x_0_1_0_0.set_num_cols((self.frame_sync_cols*8))
-        self.qtgui_time_raster_sink_x_0_1_0_0_0.set_num_cols(self.frame_sync_cols)
 
     def get_costas_loop_bandwidth_in_cycles_per_sample(self):
         return self.costas_loop_bandwidth_in_cycles_per_sample
@@ -865,20 +633,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
     def set_agc_rate(self, agc_rate):
         self.agc_rate = agc_rate
         self.analog_agc_xx_0.set_rate(self.agc_rate)
-
-    def get_after_crc(self):
-        return self.after_crc
-
-    def set_after_crc(self, after_crc):
-        self.after_crc = after_crc
-        self.qtgui_time_raster_sink_x_0_1_0_0_1_0.set_num_cols((self.after_crc*8))
-
-    def get_after_correlate_tag(self):
-        return self.after_correlate_tag
-
-    def set_after_correlate_tag(self, after_correlate_tag):
-        self.after_correlate_tag = after_correlate_tag
-        self.qtgui_time_raster_sink_x_0_1_0_0_1.set_num_cols((self.after_correlate_tag*8))
 
 
 
