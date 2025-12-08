@@ -75,6 +75,8 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.ts_packet_size = ts_packet_size = 188
         self.packet_groups = packet_groups = 1
         self.packet_length = packet_length = packet_groups*ts_packet_size
+        self.crc_size = crc_size = 4
+        self.packet_and_crc = packet_and_crc = packet_length+crc_size
         self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
         4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
         self.constellation.set_npwr(1.0)
@@ -82,11 +84,11 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.rate = rate = 2
         self.polys = polys = [109, 79]
         self.k = k = 7
-        self.frame_size = frame_size = packet_length
+        self.frame_size = frame_size = packet_and_crc
         self.bps = bps = constellation.bits_per_symbol()
         self.access_key = access_key = '11100001010110101110100010010011'
         self.video_file = video_file = "./test_video/mp4sample.ts"
-        self.tx_attenuation = tx_attenuation = 10
+        self.tx_attenuation = tx_attenuation = 0
         self.sps = sps = 16
         self.samp_rate = samp_rate = int(1e6)
         self.raw_data_sync = raw_data_sync = 188
@@ -101,7 +103,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         # Blocks
         ##################################################
 
-        self._tx_attenuation_range = qtgui.Range(0, 89, 1, 10, 200)
+        self._tx_attenuation_range = qtgui.Range(0, 89, 1, 0, 200)
         self._tx_attenuation_win = qtgui.RangeWidget(self._tx_attenuation_range, self.set_tx_attenuation, "'tx_attenuation'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._tx_attenuation_win)
         self._frame_sync_cols_range = qtgui.Range(0, 2000, 1, 384, 200)
@@ -161,7 +163,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_1_1_1 = qtgui.time_sink_f(
             1024, #size
             samp_rate, #samp_rate
-            "TX Payload No FEC", #name
+            "TX Payload No FEC Yes CRC", #name
             1, #number of inputs
             None # parent
         )
@@ -513,6 +515,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.blocks_uchar_to_float_1_1 = blocks.uchar_to_float()
         self.blocks_uchar_to_float_0_0_0 = blocks.uchar_to_float()
         self.blocks_uchar_to_float_0 = blocks.uchar_to_float()
+        self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_char*1, (samp_rate/10), True, 0 if "auto" == "auto" else max( int(float(0.1) * (samp_rate/10)) if "auto" == "time" else int(0.1), 1) )
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
         self.blocks_stream_to_tagged_stream_0_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_length, "packet_len")
         self.blocks_stream_mux_0 = blocks.stream_mux(gr.sizeof_char*1, (188, 188))
@@ -532,7 +535,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))
         self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0), (self.blocks_uchar_to_float_1_1, 0))
         self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0), (self.digital_protocol_formatter_bb_0_0, 0))
-        self.connect((self.blocks_stream_mux_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
+        self.connect((self.blocks_stream_mux_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.blocks_uchar_to_float_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.digital_crc32_bb_0_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_packed_to_unpacked_xx_0, 0))
@@ -540,6 +543,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_uchar_to_float_1_1_2, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_constellation_modulator_0_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.qtgui_time_raster_sink_x_0_1_0_0_0_0, 0))
+        self.connect((self.blocks_throttle2_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
         self.connect((self.blocks_uchar_to_float_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.blocks_uchar_to_float_0_0_0, 0), (self.qtgui_time_sink_x_0_0_0, 0))
         self.connect((self.blocks_uchar_to_float_1_1, 0), (self.qtgui_time_sink_x_1_1, 0))
@@ -587,9 +591,23 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
 
     def set_packet_length(self, packet_length):
         self.packet_length = packet_length
-        self.set_frame_size(self.packet_length)
+        self.set_packet_and_crc(self.packet_length+self.crc_size)
         self.blocks_stream_to_tagged_stream_0_0.set_packet_len(self.packet_length)
         self.blocks_stream_to_tagged_stream_0_0.set_packet_len_pmt(self.packet_length)
+
+    def get_crc_size(self):
+        return self.crc_size
+
+    def set_crc_size(self, crc_size):
+        self.crc_size = crc_size
+        self.set_packet_and_crc(self.packet_length+self.crc_size)
+
+    def get_packet_and_crc(self):
+        return self.packet_and_crc
+
+    def set_packet_and_crc(self, packet_and_crc):
+        self.packet_and_crc = packet_and_crc
+        self.set_frame_size(self.packet_and_crc)
 
     def get_constellation(self):
         return self.constellation

@@ -170,6 +170,18 @@ blocks:
     coordinate: [616, 204.0]
     rotation: 0
     state: disabled
+- name: crc_size
+  id: variable
+  parameters:
+    comment: CRC is 4 Bytes
+    value: '4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1272, 76.0]
+    rotation: 0
+    state: true
 - name: dec_cc
   id: variable_cc_decoder_def
   parameters:
@@ -218,7 +230,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: packet_length
+    value: packet_and_crc
   states:
     bus_sink: false
     bus_source: false
@@ -271,6 +283,18 @@ blocks:
     coordinate: [1831, 13]
     rotation: 0
     state: enabled
+- name: packet_and_crc
+  id: variable
+  parameters:
+    comment: ''
+    value: packet_length+crc_size
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1280, 164.0]
+    rotation: 0
+    state: true
 - name: packet_groups
   id: variable
   parameters:
@@ -294,7 +318,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1272, 84.0]
+    coordinate: [1352, 76.0]
     rotation: 0
     state: true
 - name: polys
@@ -402,7 +426,7 @@ blocks:
     start: '0'
     step: '1'
     stop: '89'
-    value: '10'
+    value: '0'
     widget: counter_slider
   states:
     bus_sink: false
@@ -612,7 +636,7 @@ blocks:
     bus_structure: null
     coordinate: [350, 504]
     rotation: 0
-    state: bypassed
+    state: enabled
 - name: blocks_uchar_to_float_0
   id: blocks_uchar_to_float
   parameters:
@@ -1440,7 +1464,7 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '"TX Payload No FEC"'
+    name: '"TX Payload No FEC Yes CRC"'
     nconnections: '1'
     size: '1024'
     srate: samp_rate
