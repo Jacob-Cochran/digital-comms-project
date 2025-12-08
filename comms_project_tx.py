@@ -93,7 +93,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate = int(1e6)
         self.raw_data_sync = raw_data_sync = 188
         self.hdr_format = hdr_format = digital.header_format_default(access_key, thresh, bps)
-        self.frame_sync_cols = frame_sync_cols = 384
+        self.frame_sync_cols = frame_sync_cols = 392
         self.enc_cc = enc_cc = fec.cc_encoder_make((frame_size*8),k, rate, polys, 0, fec.CC_STREAMING, False)
         self.dec_cc = dec_cc = fec.cc_decoder.make((frame_size*8),k, rate, polys, 0, (-1), fec.CC_STREAMING, False)
         self.center_freq = center_freq = 915e6
@@ -106,7 +106,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self._tx_attenuation_range = qtgui.Range(0, 89, 1, 0, 200)
         self._tx_attenuation_win = qtgui.RangeWidget(self._tx_attenuation_range, self.set_tx_attenuation, "'tx_attenuation'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._tx_attenuation_win)
-        self._frame_sync_cols_range = qtgui.Range(0, 2000, 1, 384, 200)
+        self._frame_sync_cols_range = qtgui.Range(0, 2000, 1, 392, 200)
         self._frame_sync_cols_win = qtgui.RangeWidget(self._frame_sync_cols_range, self.set_frame_sync_cols, "'frame_sync_cols'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._frame_sync_cols_win)
         self._raw_data_sync_range = qtgui.Range(0, 40000, 1, 188, 200)
