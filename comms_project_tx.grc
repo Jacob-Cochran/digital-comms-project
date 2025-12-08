@@ -610,7 +610,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [320, 524.0]
+    coordinate: [350, 504]
     rotation: 0
     state: bypassed
 - name: blocks_uchar_to_float_0
