@@ -30,7 +30,7 @@ import threading
 
 class test_fec_use(gr.top_block, Qt.QWidget):
 
-    def __init__(self):
+    def __init__(self, puncpat='11'):
         gr.top_block.__init__(self, "Not titled yet", catch_exceptions=True)
         Qt.QWidget.__init__(self)
         self.setWindowTitle("Not titled yet")
@@ -62,21 +62,30 @@ class test_fec_use(gr.top_block, Qt.QWidget):
         self.flowgraph_started = threading.Event()
 
         ##################################################
+        # Parameters
+        ##################################################
+        self.puncpat = puncpat
+
+        ##################################################
         # Variables
         ##################################################
         self.ts_packet_size = ts_packet_size = 188
         self.packet_groups = packet_groups = 1
+        self.packet_length = packet_length = packet_groups*ts_packet_size
         self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
         4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
         self.constellation.set_npwr(1.0)
         self.thresh = thresh = 0
-        self.packet_length = packet_length = packet_groups*ts_packet_size
+        self.rate = rate = 2
+        self.polys = polys = [109, 79]
+        self.k = k = 7
+        self.frame_size = frame_size = packet_length
         self.bps = bps = constellation.bits_per_symbol()
         self.access_key = access_key = '11100001010110101110100010010011'
         self.samp_rate = samp_rate = int(1e6)
-        self.pkt_fec_enc = pkt_fec_enc = fec.repetition_encoder_make((8*(packet_length+4)), 3)
-        self.pkt_fec_dec = pkt_fec_dec = fec.repetition_decoder.make((8*(packet_length+4)),3, 0.5)
         self.hdr_format = hdr_format = digital.header_format_default(access_key, thresh, bps)
+        self.enc_cc = enc_cc = fec.cc_encoder_make((frame_size*8),k, rate, polys, 0, fec.CC_STREAMING, False)
+        self.dec_cc = dec_cc = fec.cc_decoder.make((frame_size*8),k, rate, polys, 0, (-1), fec.CC_STREAMING, False)
 
         ##################################################
         # Blocks
@@ -370,9 +379,10 @@ class test_fec_use(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_1_win = sip.wrapinstance(self.qtgui_time_sink_x_1.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_1_win)
-        self.fec_extended_tagged_encoder_1 = fec.extended_tagged_encoder(encoder_obj_list=pkt_fec_enc, puncpat='11', lentagname="packet_len", mtu=(packet_length+4))
-        self.fec_extended_tagged_encoder_0 = fec.extended_tagged_encoder(encoder_obj_list=pkt_fec_dec, puncpat='11', lentagname="packet_len", mtu=(packet_length+4))
+        self.fec_extended_tagged_encoder_0_0 = fec.extended_tagged_encoder(encoder_obj_list=enc_cc, puncpat='11', lentagname="packet_len", mtu=1000)
+        self.fec_extended_tagged_decoder_0 = self.fec_extended_tagged_decoder_0 = fec_extended_tagged_decoder_0 = fec.extended_tagged_decoder(decoder_obj_list=dec_cc, ann=None, puncpat='11', integration_period=10000, lentagname="packet_len", mtu=1000)
         self.digital_protocol_formatter_bb_0 = digital.protocol_formatter_bb(hdr_format, "packet_len")
+        self.digital_map_bb_0 = digital.map_bb([-1, 1])
         self.digital_crc32_bb_0_0 = digital.crc32_bb(False, "packet_len", True)
         self.digital_correlate_access_code_xx_ts_0_0_0 = digital.correlate_access_code_bb_ts(access_key,
           thresh, "packet_len")
@@ -395,14 +405,16 @@ class test_fec_use(gr.top_block, Qt.QWidget):
         self.blocks_repack_bits_bb_1_0_0_0_0_0 = blocks.repack_bits_bb(8, 1, "packet_len", False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_1_0_0_0_0 = blocks.repack_bits_bb(1, 8, "packet_len", False, gr.GR_MSB_FIRST)
         self.blocks_repack_bits_bb_0_2 = blocks.repack_bits_bb(1, 8, "packet_len", False, gr.GR_MSB_FIRST)
+        self.blocks_char_to_float_1 = blocks.char_to_float(1, 1)
 
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.blocks_char_to_float_1, 0), (self.fec_extended_tagged_decoder_0, 0))
         self.connect((self.blocks_repack_bits_bb_0_2, 0), (self.blocks_uchar_to_float_1_0, 0))
         self.connect((self.blocks_repack_bits_bb_1_0_0_0_0, 0), (self.blocks_uchar_to_float_1, 0))
-        self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0, 0), (self.fec_extended_tagged_encoder_1, 0))
+        self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0, 0), (self.fec_extended_tagged_encoder_0_0, 0))
         self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))
         self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0), (self.blocks_uchar_to_float_1_1, 0))
         self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0), (self.digital_protocol_formatter_bb_0, 0))
@@ -423,12 +435,13 @@ class test_fec_use(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_stream_mux_0, 0))
         self.connect((self.blocks_vector_source_x_0_0, 0), (self.blocks_stream_mux_0, 1))
         self.connect((self.digital_correlate_access_code_xx_ts_0_0_0, 0), (self.blocks_repack_bits_bb_1_0_0_0_0, 0))
-        self.connect((self.digital_correlate_access_code_xx_ts_0_0_0, 0), (self.fec_extended_tagged_encoder_0, 0))
+        self.connect((self.digital_correlate_access_code_xx_ts_0_0_0, 0), (self.digital_map_bb_0, 0))
         self.connect((self.digital_crc32_bb_0_0, 0), (self.blocks_repack_bits_bb_1_0_0_0_0_0, 0))
         self.connect((self.digital_crc32_bb_0_0, 0), (self.blocks_uchar_to_float_1_1_1, 0))
+        self.connect((self.digital_map_bb_0, 0), (self.blocks_char_to_float_1, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
-        self.connect((self.fec_extended_tagged_encoder_0, 0), (self.blocks_repack_bits_bb_0_2, 0))
-        self.connect((self.fec_extended_tagged_encoder_1, 0), (self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0))
+        self.connect((self.fec_extended_tagged_decoder_0, 0), (self.blocks_repack_bits_bb_0_2, 0))
+        self.connect((self.fec_extended_tagged_encoder_0_0, 0), (self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0))
 
 
     def closeEvent(self, event):
@@ -438,6 +451,12 @@ class test_fec_use(gr.top_block, Qt.QWidget):
         self.wait()
 
         event.accept()
+
+    def get_puncpat(self):
+        return self.puncpat
+
+    def set_puncpat(self, puncpat):
+        self.puncpat = puncpat
 
     def get_ts_packet_size(self):
         return self.ts_packet_size
@@ -453,6 +472,15 @@ class test_fec_use(gr.top_block, Qt.QWidget):
         self.packet_groups = packet_groups
         self.set_packet_length(self.packet_groups*self.ts_packet_size)
 
+    def get_packet_length(self):
+        return self.packet_length
+
+    def set_packet_length(self, packet_length):
+        self.packet_length = packet_length
+        self.set_frame_size(self.packet_length)
+        self.blocks_stream_to_tagged_stream_0_0.set_packet_len(self.packet_length)
+        self.blocks_stream_to_tagged_stream_0_0.set_packet_len_pmt(self.packet_length)
+
     def get_constellation(self):
         return self.constellation
 
@@ -466,13 +494,29 @@ class test_fec_use(gr.top_block, Qt.QWidget):
         self.thresh = thresh
         self.set_hdr_format(digital.header_format_default(self.access_key, self.thresh, self.bps))
 
-    def get_packet_length(self):
-        return self.packet_length
+    def get_rate(self):
+        return self.rate
 
-    def set_packet_length(self, packet_length):
-        self.packet_length = packet_length
-        self.blocks_stream_to_tagged_stream_0_0.set_packet_len(self.packet_length)
-        self.blocks_stream_to_tagged_stream_0_0.set_packet_len_pmt(self.packet_length)
+    def set_rate(self, rate):
+        self.rate = rate
+
+    def get_polys(self):
+        return self.polys
+
+    def set_polys(self, polys):
+        self.polys = polys
+
+    def get_k(self):
+        return self.k
+
+    def set_k(self, k):
+        self.k = k
+
+    def get_frame_size(self):
+        return self.frame_size
+
+    def set_frame_size(self, frame_size):
+        self.frame_size = frame_size
 
     def get_bps(self):
         return self.bps
@@ -501,18 +545,6 @@ class test_fec_use(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_1_1_1.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_1_1_2.set_samp_rate(self.samp_rate)
 
-    def get_pkt_fec_enc(self):
-        return self.pkt_fec_enc
-
-    def set_pkt_fec_enc(self, pkt_fec_enc):
-        self.pkt_fec_enc = pkt_fec_enc
-
-    def get_pkt_fec_dec(self):
-        return self.pkt_fec_dec
-
-    def set_pkt_fec_dec(self, pkt_fec_dec):
-        self.pkt_fec_dec = pkt_fec_dec
-
     def get_hdr_format(self):
         return self.hdr_format
 
@@ -520,10 +552,28 @@ class test_fec_use(gr.top_block, Qt.QWidget):
         self.hdr_format = hdr_format
         self.digital_protocol_formatter_bb_0.set_header_format(self.hdr_format)
 
+    def get_enc_cc(self):
+        return self.enc_cc
 
+    def set_enc_cc(self, enc_cc):
+        self.enc_cc = enc_cc
+
+    def get_dec_cc(self):
+        return self.dec_cc
+
+    def set_dec_cc(self, dec_cc):
+        self.dec_cc = dec_cc
+
+
+
+def argument_parser():
+    parser = ArgumentParser()
+    return parser
 
 
 def main(top_block_cls=test_fec_use, options=None):
+    if options is None:
+        options = argument_parser().parse_args()
 
     qapp = Qt.QApplication(sys.argv)
 
