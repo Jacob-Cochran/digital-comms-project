@@ -162,7 +162,7 @@ blocks:
     start: -200e3
     step: '1'
     stop: 200e3
-    value: '200'
+    value: '0'
     widget: counter_slider
   states:
     bus_sink: false

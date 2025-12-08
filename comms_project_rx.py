@@ -100,7 +100,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.enc_cc = enc_cc = fec.cc_encoder_make((frame_size*8),k, rate, polys, 0, fec.CC_STREAMING, False)
         self.dec_cc = dec_cc = fec.cc_decoder.make((frame_size*8),k, rate, polys, 0, (-1), fec.CC_STREAMING, False)
         self.costas_loop_bandwidth_in_cycles_per_sample = costas_loop_bandwidth_in_cycles_per_sample = 0.01
-        self.cfo_offset = cfo_offset = 200
+        self.cfo_offset = cfo_offset = 0
         self.center_freq = center_freq = 915e6
         self.agc_rate = agc_rate = 1e-4
 
@@ -122,7 +122,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(2, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self._cfo_offset_range = qtgui.Range(-200e3, 200e3, 1, 200, 200)
+        self._cfo_offset_range = qtgui.Range(-200e3, 200e3, 1, 0, 200)
         self._cfo_offset_win = qtgui.RangeWidget(self._cfo_offset_range, self.set_cfo_offset, "'cfo_offset'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_grid_layout.addWidget(self._cfo_offset_win, 0, 0, 1, 4)
         for r in range(0, 1):
@@ -547,8 +547,8 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_symbol_sync_xx_0, 1), (self.blocks_null_sink_0_1, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_costas_loop_cc_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1_0, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 3), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 1))
         self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
+        self.connect((self.digital_symbol_sync_xx_0, 3), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 1))
         self.connect((self.fec_extended_tagged_decoder_0, 0), (self.blocks_repack_bits_bb_0_2, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_freq_sink_x_0, 0))
