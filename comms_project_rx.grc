@@ -308,7 +308,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1398, 85]
+    coordinate: [1425, 83]
     rotation: 0
     state: true
 - name: dec_cc
@@ -331,7 +331,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2213, 14]
+    coordinate: [2255, 13]
     rotation: 0
     state: enabled
 - name: enc_cc
@@ -352,7 +352,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2013, 19]
+    coordinate: [2055, 18]
     rotation: 0
     state: enabled
 - name: frame_size
@@ -364,7 +364,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1916, 84]
+    coordinate: [1394, 202]
     rotation: 0
     state: true
 - name: frame_sync_cols
@@ -404,7 +404,7 @@ blocks:
 - name: k
   id: variable
   parameters:
-    comment: ''
+    comment: 1/2
     value: '7'
   states:
     bus_sink: false
@@ -413,6 +413,18 @@ blocks:
     coordinate: [1869, 19]
     rotation: 0
     state: enabled
+- name: k
+  id: variable
+  parameters:
+    comment: ''
+    value: '5'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1869, 206]
+    rotation: 0
+    state: disabled
 - name: nfilts
   id: variable
   parameters:
@@ -434,7 +446,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1275, 173]
+    coordinate: [1271, 203]
     rotation: 0
     state: true
 - name: packet_groups
@@ -466,25 +478,37 @@ blocks:
 - name: polys
   id: variable
   parameters:
-    comment: ''
+    comment: 1/2
     value: '[109, 79]'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1821, 83]
+    coordinate: [1776, 18]
     rotation: 0
     state: enabled
-- name: rate
+- name: polys
   id: variable
   parameters:
     comment: ''
-    value: '2'
+    value: '[25, 27]'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1941, 19]
+    coordinate: [1779, 207]
+    rotation: 0
+    state: disabled
+- name: rate
+  id: variable
+  parameters:
+    comment: ''
+    value: len(polys)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1949, 113]
     rotation: 0
     state: enabled
 - name: rcc_taps
@@ -1212,7 +1236,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1922, 150]
+    coordinate: [1864, 115]
     rotation: 0
     state: enabled
 - name: qtgui_const_sink_x_1_0

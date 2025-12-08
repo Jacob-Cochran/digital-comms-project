@@ -636,7 +636,7 @@ blocks:
     bus_structure: null
     coordinate: [350, 504]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_uchar_to_float_0
   id: blocks_uchar_to_float
   parameters:

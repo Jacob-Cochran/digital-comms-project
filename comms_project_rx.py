@@ -78,6 +78,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.packet_groups = packet_groups = 1
         self.packet_length = packet_length = packet_groups*ts_packet_size
         self.crc_size = crc_size = 4
+        self.polys = polys = [109, 79]
         self.packet_and_crc = packet_and_crc = packet_length+crc_size
         self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
         4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
@@ -85,8 +86,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.thresh = thresh = 0
         self.sps = sps = 16
         self.samp_rate = samp_rate = int(1e6)
-        self.rate = rate = 2
-        self.polys = polys = [109, 79]
+        self.rate = rate = len(polys)
         self.nfilts = nfilts = 32
         self.k = k = 7
         self.frame_size = frame_size = packet_and_crc
@@ -547,8 +547,8 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_symbol_sync_xx_0, 1), (self.blocks_null_sink_0_1, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_costas_loop_cc_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1_0, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 3), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 1))
+        self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
         self.connect((self.fec_extended_tagged_decoder_0, 0), (self.blocks_repack_bits_bb_0_2, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_freq_sink_x_0, 0))
@@ -596,6 +596,13 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
     def set_crc_size(self, crc_size):
         self.crc_size = crc_size
         self.set_packet_and_crc(self.packet_length+self.crc_size)
+
+    def get_polys(self):
+        return self.polys
+
+    def set_polys(self, polys):
+        self.polys = polys
+        self.set_rate(len(self.polys))
 
     def get_packet_and_crc(self):
         return self.packet_and_crc
@@ -648,12 +655,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
 
     def set_rate(self, rate):
         self.rate = rate
-
-    def get_polys(self):
-        return self.polys
-
-    def set_polys(self, polys):
-        self.polys = polys
 
     def get_nfilts(self):
         return self.nfilts
