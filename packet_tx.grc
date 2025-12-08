@@ -44,7 +44,7 @@ blocks:
     bus_structure: null
     coordinate: [1024, 524.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: nfilts
   id: variable
   parameters:
@@ -54,9 +54,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1552, 164.0]
+    coordinate: [1664, 468.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: taps_per_filt
   id: variable
   parameters:
@@ -68,7 +68,7 @@ blocks:
     bus_structure: null
     coordinate: [912, 524.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_repack_bits_bb_0
   id: blocks_repack_bits_bb
   parameters:
@@ -127,7 +127,7 @@ blocks:
     bus_structure: null
     coordinate: [1264, 456.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_tagged_stream_mux_0
   id: blocks_tagged_stream_mux
   parameters:
@@ -147,7 +147,7 @@ blocks:
     bus_structure: null
     coordinate: [360, 440.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: digital_burst_shaper_xx_0
   id: digital_burst_shaper_xx
   parameters:
@@ -168,7 +168,7 @@ blocks:
     bus_structure: null
     coordinate: [648, 420.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: digital_chunks_to_symbols_xx_0
   id: digital_chunks_to_symbols_xx
   parameters:
@@ -188,7 +188,7 @@ blocks:
     bus_structure: null
     coordinate: [1448, 264.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: digital_chunks_to_symbols_xx_0_0
   id: digital_chunks_to_symbols_xx
   parameters:
@@ -208,7 +208,7 @@ blocks:
     bus_structure: null
     coordinate: [1448, 336.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: digital_crc32_async_bb_1
   id: digital_crc32_async_bb
   parameters:
@@ -240,7 +240,7 @@ blocks:
     bus_structure: null
     coordinate: [1200, 260.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: digital_map_bb_1_0
   id: digital_map_bb
   parameters:
@@ -256,7 +256,7 @@ blocks:
     bus_structure: null
     coordinate: [1200, 332.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: digital_protocol_formatter_async_0
   id: digital_protocol_formatter_async
   parameters:
@@ -378,7 +378,7 @@ blocks:
     bus_structure: null
     coordinate: [1672, 276.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: mod_payload
   id: virtual_sink
   parameters:
@@ -391,7 +391,7 @@ blocks:
     bus_structure: null
     coordinate: [1672, 348.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: pad_sink_0
   id: pad_sink
   parameters:
@@ -409,7 +409,7 @@ blocks:
     bus_structure: null
     coordinate: [1552, 468.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: pad_sink_1
   id: pad_sink
   parameters:
@@ -445,7 +445,7 @@ blocks:
     bus_structure: null
     coordinate: [616, 588.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: pad_sink_3
   id: pad_sink
   parameters:
@@ -463,7 +463,7 @@ blocks:
     bus_structure: null
     coordinate: [912, 588.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: pad_source_0
   id: pad_source
   parameters:
@@ -538,7 +538,7 @@ blocks:
     bus_structure: null
     coordinate: [904, 428.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: pld_const
   id: parameter
   parameters:
@@ -603,7 +603,7 @@ blocks:
     bus_structure: null
     coordinate: [112, 428.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: rx_mod_payload
   id: virtual_source
   parameters:
@@ -616,7 +616,7 @@ blocks:
     bus_structure: null
     coordinate: [112, 484.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: sps
   id: parameter
   parameters:

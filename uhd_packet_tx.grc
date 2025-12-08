@@ -72,7 +72,7 @@ blocks:
     bus_structure: null
     coordinate: [496, 12.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: Const_PLD
   id: variable_constellation
   parameters:
@@ -92,7 +92,7 @@ blocks:
     bus_structure: null
     coordinate: [736, 12.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: amp
   id: variable_qtgui_range
   parameters:
