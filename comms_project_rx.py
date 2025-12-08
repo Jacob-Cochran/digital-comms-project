@@ -13,7 +13,6 @@ from gnuradio import qtgui
 from PyQt5 import QtCore
 from gnuradio import analog
 from gnuradio import blocks
-from gnuradio import blocks, gr
 from gnuradio import digital
 from gnuradio import filter
 from gnuradio import gr
@@ -568,7 +567,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
             digital.IR_PFB_MF,
             nfilts,
             rcc_taps)
-        self.digital_protocol_parser_b_0 = digital.protocol_parser_b(hdr_format)
         self.digital_fll_band_edge_cc_0 = digital.fll_band_edge_cc(sps, alpha, (sps*2+1), (2*math.pi/sps/100/sps))
         self.digital_diff_decoder_bb_0_0 = digital.diff_decoder_bb(constellation.arity(), digital.DIFF_DIFFERENTIAL)
         self.digital_crc32_bb_0_0_0_0 = digital.crc32_bb(True, "packet_len", True)
@@ -587,8 +585,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.blocks_null_sink_1 = blocks.null_sink(gr.sizeof_float*1)
         self.blocks_null_sink_0_1 = blocks.null_sink(gr.sizeof_float*1)
         self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
-        self.blocks_multiply_const_vxx_1_1 = blocks.multiply_const_cc(math.e**(2j*math.pi*0))
-        self.blocks_message_debug_0 = blocks.message_debug(True, gr.log_levels.info)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
         self.analog_sig_source_x_0 = analog.sig_source_c(samp_rate, analog.GR_COS_WAVE, cfo_offset, 1, 0, 0)
         self.analog_agc_xx_0 = analog.agc_cc(agc_rate, 1.0, 1.0, 65536)
@@ -597,11 +593,9 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.digital_protocol_parser_b_0, 'info'), (self.blocks_message_debug_0, 'print'))
         self.connect((self.analog_agc_xx_0, 0), (self.digital_fll_band_edge_cc_0, 0))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_multiply_xx_0, 1))
         self.connect((self.blocks_char_to_float_0, 0), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_1, 0))
-        self.connect((self.blocks_multiply_const_vxx_1_1, 0), (self.digital_constellation_decoder_cb_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.analog_agc_xx_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.qtgui_freq_sink_x_0, 1))
         self.connect((self.blocks_repack_bits_bb_1_0_0_0_0, 0), (self.digital_crc32_bb_0_0_0_0, 0))
@@ -616,21 +610,20 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_diff_decoder_bb_0_0, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0_0_0, 0), (self.blocks_repack_bits_bb_1_0_0_0_0, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0_0_0, 0), (self.blocks_uchar_to_float_0_0_0_0_0, 0))
-        self.connect((self.digital_costas_loop_cc_0, 0), (self.blocks_multiply_const_vxx_1_1, 0))
         self.connect((self.digital_costas_loop_cc_0, 3), (self.blocks_null_sink_1, 0))
         self.connect((self.digital_costas_loop_cc_0, 1), (self.blocks_null_sink_2, 0))
         self.connect((self.digital_costas_loop_cc_0, 2), (self.blocks_null_sink_3, 0))
+        self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_constellation_decoder_cb_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_1_0, 1))
         self.connect((self.digital_crc32_bb_0_0_0_0, 0), (self.blocks_char_to_float_0, 0))
-        self.connect((self.digital_crc32_bb_0_0_0_0, 0), (self.digital_protocol_parser_b_0, 0))
         self.connect((self.digital_diff_decoder_bb_0_0, 0), (self.blocks_unpacked_to_packed_xx_0_1, 0))
         self.connect((self.digital_fll_band_edge_cc_0, 0), (self.blocks_skiphead_0_0, 0))
         self.connect((self.digital_fll_band_edge_cc_0, 0), (self.qtgui_freq_sink_x_0, 2))
         self.connect((self.digital_symbol_sync_xx_0, 1), (self.blocks_null_sink_0_1, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_costas_loop_cc_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1_0, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 3), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 1))
+        self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_waterfall_sink_x_0, 0))
