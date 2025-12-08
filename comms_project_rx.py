@@ -77,6 +77,8 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.ts_packet_size = ts_packet_size = 188
         self.packet_groups = packet_groups = 1
         self.packet_length = packet_length = packet_groups*ts_packet_size
+        self.crc_size = crc_size = 4
+        self.packet_and_crc = packet_and_crc = packet_length+crc_size
         self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
         4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
         self.constellation.set_npwr(1.0)
@@ -87,18 +89,18 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.polys = polys = [109, 79]
         self.nfilts = nfilts = 32
         self.k = k = 7
-        self.frame_size = frame_size = packet_length
+        self.frame_size = frame_size = packet_and_crc
         self.bps = bps = constellation.bits_per_symbol()
         self.alpha = alpha = 0.45
         self.access_key = access_key = '11100001010110101110100010010011'
         self.timing_error_loop_bandwith = timing_error_loop_bandwith = 0.045
         self.rcc_taps = rcc_taps = firdes.root_raised_cosine(nfilts, nfilts*samp_rate,samp_rate/sps, alpha, (11*sps*nfilts))
         self.hdr_format = hdr_format = digital.header_format_default(access_key, thresh, bps)
-        self.frame_sync_cols = frame_sync_cols = 200
+        self.frame_sync_cols = frame_sync_cols = 392
         self.enc_cc = enc_cc = fec.cc_encoder_make((frame_size*8),k, rate, polys, 0, fec.CC_STREAMING, False)
         self.dec_cc = dec_cc = fec.cc_decoder.make((frame_size*8),k, rate, polys, 0, (-1), fec.CC_STREAMING, False)
         self.costas_loop_bandwidth_in_cycles_per_sample = costas_loop_bandwidth_in_cycles_per_sample = 0.01
-        self.cfo_offset = cfo_offset = 200
+        self.cfo_offset = cfo_offset = 0
         self.center_freq = center_freq = 915e6
         self.agc_rate = agc_rate = 1e-4
 
@@ -120,7 +122,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(2, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self._cfo_offset_range = qtgui.Range(-200e3, 200e3, 1, 200, 200)
+        self._cfo_offset_range = qtgui.Range(-200e3, 200e3, 1, 0, 200)
         self._cfo_offset_win = qtgui.RangeWidget(self._cfo_offset_range, self.set_cfo_offset, "'cfo_offset'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_grid_layout.addWidget(self._cfo_offset_win, 0, 0, 1, 4)
         for r in range(0, 1):
@@ -470,7 +472,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.iio_pluto_source_0.set_rfdc(True)
         self.iio_pluto_source_0.set_bbdc(True)
         self.iio_pluto_source_0.set_filter_params('Auto', '', 0, 0)
-        self._frame_sync_cols_range = qtgui.Range(0, 1600, 1, 200, 200)
+        self._frame_sync_cols_range = qtgui.Range(0, 1600, 1, 392, 200)
         self._frame_sync_cols_win = qtgui.RangeWidget(self._frame_sync_cols_range, self.set_frame_sync_cols, "'frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._frame_sync_cols_win)
         self.fec_extended_tagged_decoder_0 = self.fec_extended_tagged_decoder_0 = fec_extended_tagged_decoder_0 = fec.extended_tagged_decoder(decoder_obj_list=dec_cc, ann=None, puncpat='11', integration_period=10000, lentagname="packet_len", mtu=1000)
@@ -586,7 +588,21 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
 
     def set_packet_length(self, packet_length):
         self.packet_length = packet_length
-        self.set_frame_size(self.packet_length)
+        self.set_packet_and_crc(self.packet_length+self.crc_size)
+
+    def get_crc_size(self):
+        return self.crc_size
+
+    def set_crc_size(self, crc_size):
+        self.crc_size = crc_size
+        self.set_packet_and_crc(self.packet_length+self.crc_size)
+
+    def get_packet_and_crc(self):
+        return self.packet_and_crc
+
+    def set_packet_and_crc(self, packet_and_crc):
+        self.packet_and_crc = packet_and_crc
+        self.set_frame_size(self.packet_and_crc)
 
     def get_constellation(self):
         return self.constellation

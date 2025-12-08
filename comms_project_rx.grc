@@ -162,7 +162,7 @@ blocks:
     start: -200e3
     step: '1'
     stop: 200e3
-    value: '200'
+    value: '0'
     widget: counter_slider
   states:
     bus_sink: false
@@ -299,6 +299,18 @@ blocks:
     coordinate: [512, 892.0]
     rotation: 0
     state: enabled
+- name: crc_size
+  id: variable
+  parameters:
+    comment: CRC is 4 Bytes
+    value: '4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1398, 85]
+    rotation: 0
+    state: true
 - name: dec_cc
   id: variable_cc_decoder_def
   parameters:
@@ -347,7 +359,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: packet_length
+    value: packet_and_crc
   states:
     bus_sink: false
     bus_source: false
@@ -368,7 +380,7 @@ blocks:
     start: '0'
     step: '1'
     stop: '1600'
-    value: '200'
+    value: '392'
     widget: counter_slider
   states:
     bus_sink: false
@@ -411,6 +423,18 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [792, 1300.0]
+    rotation: 0
+    state: true
+- name: packet_and_crc
+  id: variable
+  parameters:
+    comment: ''
+    value: packet_length+crc_size
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1275, 173]
     rotation: 0
     state: true
 - name: packet_groups
