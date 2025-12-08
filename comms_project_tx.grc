@@ -123,26 +123,7 @@ blocks:
     coordinate: [616, 12.0]
     rotation: 0
     state: enabled
-- name: constellation
-  id: variable_constellation
-  parameters:
-    comment: Differentially encoded 4QAM constellation
-    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
-    dims: '1'
-    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
-    npwr: '1.0'
-    precision: '8'
-    rot_sym: '4'
-    soft_dec_lut: None
-    sym_map: '[0, 1, 3, 2]'
-    type: calcdist
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [616, 196.0]
-    rotation: 0
-    state: disabled
+    state: enabled
 - name: constellation
   id: variable_constellation
   parameters:
@@ -161,6 +142,33 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [872, 196.0]
+    rotation: 0
+    state: disabled
+- name: constellation
+  id: variable_constellation
+  parameters:
+    comment: Differentially encoded 16QAM constellation
+    const_points: "[-0.9486832980505138-0.9486832980505138j,\n -0.31622776601683794-0.9486832980505138j,\n\
+      \  0.31622776601683794-0.9486832980505138j,\n  0.9486832980505138-0.9486832980505138j,\n\
+      \n -0.9486832980505138-0.31622776601683794j,\n -0.31622776601683794-0.31622776601683794j,\n\
+      \  0.31622776601683794-0.31622776601683794j,\n  0.9486832980505138-0.31622776601683794j,\n\
+      \n -0.9486832980505138+0.31622776601683794j,\n -0.31622776601683794+0.31622776601683794j,\n\
+      \  0.31622776601683794+0.31622776601683794j,\n  0.9486832980505138+0.31622776601683794j,\n\
+      \n -0.9486832980505138+0.9486832980505138j,\n -0.31622776601683794+0.9486832980505138j,\n\
+      \  0.31622776601683794+0.9486832980505138j,\n  0.9486832980505138+0.9486832980505138j]"
+    dims: '1'
+    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
+    npwr: '1.0'
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]'
+    type: calcdist
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [616, 204.0]
     rotation: 0
     state: disabled
 - name: crc_data_sync
@@ -187,18 +195,8 @@ blocks:
 - name: frame_sync_cols
   id: variable_qtgui_range
   parameters:
-    comment: "Represents the time raster to ensure that packet\nallignment works ideally\
-      \ should should leading \ncolumns gaps indicating low BER."
-    gui_hint: ''
-    label: ''
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: int
-    start: '0'
-    step: '1'
-    stop: '40000'
-    value: '200'
-    widget: counter_slider
+    comment: header_format_default
+    value: digital.header_format_default(access_key, thresh, bps)
   states:
     bus_sink: false
     bus_source: false
@@ -352,7 +350,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2656, 180.0]
+    coordinate: [2896, 180.0]
     rotation: 0
     state: true
 - name: video_file
@@ -416,7 +414,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2304, 436.0]
+    coordinate: [2544, 436.0]
     rotation: 0
     state: true
 - name: blocks_packed_to_unpacked_xx_0
@@ -681,7 +679,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2016, 412.0]
+    coordinate: [2256, 412.0]
     rotation: 0
     state: enabled
 - name: digital_crc32_bb_0
@@ -742,7 +740,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2648, 300.0]
+    coordinate: [2888, 300.0]
     rotation: 0
     state: enabled
 - name: import_0
@@ -813,6 +811,7 @@ blocks:
     mult: '[]'
     name: '"Transmit Frames Bits"'
     ncols: frame_sync_cols*8
+    ncols: frame_sync_cols*8
     nconnections: '1'
     nrows: '64'
     offset: '[]'
@@ -831,7 +830,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2200, 532.0]
+    coordinate: [2440, 532.0]
     rotation: 0
     state: true
 - name: qtgui_time_raster_sink_x_0_1_0_0_0_0
@@ -875,6 +874,7 @@ blocks:
     label9: ''
     mult: '[]'
     name: '" Transmit Frames Bytes"'
+    ncols: frame_sync_cols
     ncols: frame_sync_cols
     nconnections: '1'
     nrows: '64'
@@ -1534,7 +1534,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2648, 468.0]
+    coordinate: [2888, 468.0]
     rotation: 0
     state: enabled
 - name: virtual_sink_0

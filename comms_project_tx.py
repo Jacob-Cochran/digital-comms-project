@@ -92,9 +92,12 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self._tx_attenuation_range = qtgui.Range(0, 89, 1, 10, 200)
         self._tx_attenuation_win = qtgui.RangeWidget(self._tx_attenuation_range, self.set_tx_attenuation, "'tx_attenuation'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._tx_attenuation_win)
+<<<<<<< HEAD
         self._raw_data_sync_range = qtgui.Range(0, 40000, 1, 188, 200)
         self._raw_data_sync_win = qtgui.RangeWidget(self._raw_data_sync_range, self.set_raw_data_sync, "'raw_data_sync'", "counter_slider", int, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._raw_data_sync_win)
+=======
+>>>>>>> origin/local-rx-branch
         self._frame_sync_cols_range = qtgui.Range(0, 40000, 1, 200, 200)
         self._frame_sync_cols_win = qtgui.RangeWidget(self._frame_sync_cols_range, self.set_frame_sync_cols, "'frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._frame_sync_cols_win)
