@@ -298,28 +298,6 @@ blocks:
     coordinate: [2896, 180.0]
     rotation: 0
     state: true
-- name: blocks_file_source_0_0
-  id: blocks_file_source
-  parameters:
-    affinity: ''
-    alias: ''
-    begin_tag: pmt.PMT_NIL
-    comment: ''
-    file: /home/jcochran/comms/test_video/mp4sample.ts
-    length: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    offset: '0'
-    repeat: 'True'
-    type: byte
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [64, 428.0]
-    rotation: 0
-    state: enabled
 - name: blocks_multiply_const_vxx_0
   id: blocks_multiply_const_vxx
   parameters:
@@ -493,6 +471,51 @@ blocks:
     coordinate: [1144, 484.0]
     rotation: 0
     state: true
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "import numpy as np\nfrom gnuradio import gr\nfrom picamera2 import\
+      \ Picamera2\nfrom picamera2.encoders import H264Encoder\n\nclass picam2_h264_source(gr.sync_block):\n\
+      \    \"\"\"\n    Picamera2 H.264 Source Block for GNU Radio with frame tagging.\n\
+      \    Produces a stream of encoded H.264 bytes from the Pi camera.\n    \"\"\"\
+      \n\n    def __init__(self, width=1280, height=720, bitrate=5000000, frame_tag=\"\
+      frame_start\"):\n        gr.sync_block.__init__(self,\n            name=\"Picamera2\
+      \ H264 Source with Tags\",\n            in_sig=None,\n            out_sig=[np.uint8])\n\
+      \n        self.frame_tag = frame_tag\n        self.frame_buffer = []  # list\
+      \ of (frame_bytes, tag_position)\n        self.tag_buffer = []    # positions\
+      \ for tags\n\n        # Initialize Picamera2\n        self.picam2 = Picamera2()\n\
+      \        self.encoder = H264Encoder(bitrate=bitrate)\n        self.picam2.configure(\n\
+      \            self.picam2.create_video_configuration(\n                main={\"\
+      size\": (width, height)},\n                encoder=self.encoder\n          \
+      \  )\n        )\n\n        # Start recording with callback\n        self.picam2.start_recording(self.encoder,\
+      \ callback=self._frame_callback)\n\n    def _frame_callback(self, encoded_frame):\n\
+      \        # Convert bytes to numpy array\n        frame_array = np.frombuffer(encoded_frame,\
+      \ dtype=np.uint8)\n        # Store frame and its tag start position\n      \
+      \  self.frame_buffer.append(frame_array)\n        self.tag_buffer.append(0)\
+      \  # tag will be placed at start of frame\n\n    def work(self, input_items,\
+      \ output_items):\n        out = output_items[0]\n        if not self.frame_buffer:\n\
+      \            return 0  # no data ready\n\n        frame = self.frame_buffer.pop(0)\n\
+      \        tag_pos = self.tag_buffer.pop(0)\n\n        n = min(len(frame), len(out))\n\
+      \        out[:n] = frame[:n]\n\n        # Add tag at the start of the frame\n\
+      \        self.add_item_tag(0, self.nitems_written(0) + tag_pos,\n          \
+      \              gr.tag_utils.python_to_tag((self.frame_tag, \"\")))\n\n     \
+      \   return n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    example_param: '1.0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Embedded Python Block', 'blk', [('example_param', '1.0')], [('0',
+      'complex', 1)], [('0', 'complex', 1)], 'Embedded Python Block example - a simple
+      multiply const', ['example_param'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [104, 468.0]
+    rotation: 0
+    state: enabled
 - name: iio_pluto_sink_0_0_0
   id: iio_pluto_sink
   parameters:
@@ -545,6 +568,19 @@ blocks:
     coordinate: [1080, 12.0]
     rotation: 0
     state: true
+- name: import_0_1
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: import picamera2
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [976, 148.0]
+    rotation: 0
+    state: enabled
 - name: qtgui_time_raster_sink_x_0_0
   id: qtgui_time_raster_sink_x
   parameters:
@@ -850,7 +886,6 @@ blocks:
     state: enabled
 
 connections:
-- [blocks_file_source_0_0, '0', blocks_throttle2_0, '0']
 - [blocks_multiply_const_vxx_0, '0', iio_pluto_sink_0_0_0, '0']
 - [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0_1, '0']
 - [blocks_packed_to_unpacked_xx_0, '0', qtgui_time_raster_sink_x_0_0, '0']

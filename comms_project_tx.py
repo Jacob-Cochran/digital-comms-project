@@ -67,7 +67,8 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.constellation = constellation = digital.constellation_qpsk().base()
+        self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
+        4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
         self.constellation.set_npwr(1.0)
         self.ts_packet_size = ts_packet_size = 188
         self.thresh = thresh = 0
@@ -76,7 +77,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.access_key = access_key = '11100001010110101110100010010011'
         self.tx_attenuation = tx_attenuation = 10
         self.sps = sps = 16
-        self.samp_rate = samp_rate = int(1e6)
+        self.samp_rate = samp_rate = int(4e6)
         self.packet_length = packet_length = packet_groups*ts_packet_size
         self.out_frame_sync_cols = out_frame_sync_cols = 200
         self.in_frame_sync_cols = in_frame_sync_cols = 200

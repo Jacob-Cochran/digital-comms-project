@@ -172,68 +172,25 @@ blocks:
 - name: constellation
   id: variable_constellation
   parameters:
-    comment: Differentially encoded 16QAM constellation
-    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
+    comment: Differentially encoded 16PSK constellation
+    const_points: '[1.000000 + 0.000000j,0.923880 + 0.382683j,0.707107 + 0.707107j,0.382683
+      + 0.923880j,0.000000 + 1.000000j,-0.382683 + 0.923880j,-0.707107 + 0.707107j,-0.923880
+      + 0.382683j,-1.000000 + 0.000000j,-0.923880 + -0.382683j,-0.707107 + -0.707107j,-0.382683
+      + -0.923880j,-0.000000 + -1.000000j,0.382683 + -0.923880j,0.707107 + -0.707107j,0.923880
+      + -0.382683j]'
     dims: '1'
     normalization: digital.constellation.AMPLITUDE_NORMALIZATION
     npwr: '1.0'
     precision: '8'
-    rot_sym: '4'
+    rot_sym: '16'
     soft_dec_lut: None
-    sym_map: '[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]'
-    type: 16qam
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [880, 196.0]
-    rotation: 0
-    state: disabled
-- name: constellation
-  id: variable_constellation
-  parameters:
-    comment: Differentially encoded 16QAM constellation
-    const_points: "[-0.9486832980505138-0.9486832980505138j,\n -0.31622776601683794-0.9486832980505138j,\n\
-      \  0.31622776601683794-0.9486832980505138j,\n  0.9486832980505138-0.9486832980505138j,\n\
-      \n -0.9486832980505138-0.31622776601683794j,\n -0.31622776601683794-0.31622776601683794j,\n\
-      \  0.31622776601683794-0.31622776601683794j,\n  0.9486832980505138-0.31622776601683794j,\n\
-      \n -0.9486832980505138+0.31622776601683794j,\n -0.31622776601683794+0.31622776601683794j,\n\
-      \  0.31622776601683794+0.31622776601683794j,\n  0.9486832980505138+0.31622776601683794j,\n\
-      \n -0.9486832980505138+0.9486832980505138j,\n -0.31622776601683794+0.9486832980505138j,\n\
-      \  0.31622776601683794+0.9486832980505138j,\n  0.9486832980505138+0.9486832980505138j]"
-    dims: '1'
-    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
-    npwr: '1.0'
-    precision: '8'
-    rot_sym: '4'
-    soft_dec_lut: None
-    sym_map: '[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]'
+    sym_map: '[10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 14, 15, 8, 9]'
     type: calcdist
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [608, 196.0]
-    rotation: 0
-    state: disabled
-- name: constellation
-  id: variable_constellation
-  parameters:
-    comment: "Base\n 4QAM constellation"
-    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
-    dims: '1'
-    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
-    npwr: '1.0'
-    precision: '8'
-    rot_sym: '4'
-    soft_dec_lut: None
-    sym_map: '[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]'
-    type: qpsk
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [880, 292.0]
     rotation: 0
     state: disabled
 - name: costas_loop_bandwidth_in_cycles_per_sample
@@ -255,6 +212,28 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [512, 892.0]
+    rotation: 0
+    state: enabled
+- name: frame_sync_cols
+  id: variable_qtgui_range
+  parameters:
+    comment: "Represents the time raster to ensure that packet\nallignment works ideally\
+      \ should should leading \ncolumns gaps indicating low BER."
+    gui_hint: ''
+    label: ''
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: int
+    start: '0'
+    step: '1'
+    stop: '1600'
+    value: 12+packet_length
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1520, 12.0]
     rotation: 0
     state: enabled
 - name: hdr_format
@@ -281,28 +260,6 @@ blocks:
     coordinate: [792, 1300.0]
     rotation: 0
     state: true
-- name: out_frame_sync_cols
-  id: variable_qtgui_range
-  parameters:
-    comment: "Represents the time raster to ensure that packet\nallignment works ideally\
-      \ should should leading \ncolumns gaps indicating low BER."
-    gui_hint: ''
-    label: ''
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: int
-    start: '0'
-    step: '1'
-    stop: '1600'
-    value: '200'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1520, 12.0]
-    rotation: 0
-    state: enabled
 - name: packet_groups
   id: variable
   parameters:
@@ -350,7 +307,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: int(4e6)
+    value: int(1e6)
   states:
     bus_sink: false
     bus_source: false
@@ -1444,6 +1401,47 @@ blocks:
     coordinate: [776, 900.0]
     rotation: 0
     state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\nfrom gnuradio\
+      \ import gr\nimport numpy as np\n\nclass ts_file_writer_crc_stream(gr.basic_block):\n\
+      \    \"\"\"\n    Unwrap packets from Stream CRC32 (Check Mode) byte stream\n\
+      \    and write MPEG-TS packets to a file.\n    \"\"\"\n\n    def __init__(self,\
+      \ header_len=12, ts_packet_size=188, crc_len=4, filename=\"/tmp/video.ts\"):\n\
+      \        gr.basic_block.__init__(\n            self,\n            name=\"ts_file_writer_crc_stream\"\
+      ,\n            in_sig=[np.uint8],\n            out_sig=[]\n        )\n     \
+      \   self.header_len = header_len\n        self.ts_packet_size = ts_packet_size\n\
+      \        self.crc_len = crc_len\n        self.packet_len = header_len + ts_packet_size\
+      \ + crc_len\n        self.filename = filename\n\n        self.buffer = bytearray()\n\
+      \        self.f = open(self.filename, \"wb\")\n\n    def general_work(self,\
+      \ input_items, output_items):\n        in0 = input_items[0]\n        self.buffer.extend(in0.tobytes())\n\
+      \n        while len(self.buffer) >= self.packet_len:\n            pkt = self.buffer[:self.packet_len]\n\
+      \            self.buffer = self.buffer[self.packet_len:]\n\n            ts_payload\
+      \ = pkt[self.header_len:self.header_len+self.ts_packet_size]\n            self.f.write(ts_payload)\n\
+      \n        self.f.flush()\n        self.consume(0, len(in0))\n        return\
+      \ 0\n\n    def stop(self):\n        self.f.close()\n        return True\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    crc_len: '4'
+    filename: '"/tmp/test.ts"'
+    header_len: '12'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    ts_packet_size: '200'
+  states:
+    _io_cache: ('ts_file_writer_crc_stream', 'ts_file_writer_crc_stream', [('header_len',
+      '12'), ('ts_packet_size', '188'), ('crc_len', '4'), ('filename', "'/tmp/video.ts'")],
+      [('0', 'byte', 1)], [], '\n    Unwrap packets from Stream CRC32 (Check Mode)
+      byte stream\n    and write MPEG-TS packets to a file.\n    ', ['crc_len', 'filename',
+      'header_len', 'ts_packet_size'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4504, 1828.0]
+    rotation: 0
+    state: disabled
 - name: iio_pluto_source_0
   id: iio_pluto_source
   parameters:
@@ -1870,7 +1868,7 @@ blocks:
     label9: ''
     mult: '[]'
     name: '"Packet Out Frames Bits"'
-    ncols: out_frame_sync_cols*8
+    ncols: frame_sync_cols*8
     nconnections: '1'
     nrows: '64'
     offset: '[]'
@@ -1933,7 +1931,7 @@ blocks:
     label9: ''
     mult: '[]'
     name: '"Packet Out Frames Bytes"'
-    ncols: out_frame_sync_cols
+    ncols: frame_sync_cols
     nconnections: '1'
     nrows: '64'
     offset: '[]'
@@ -3600,6 +3598,7 @@ connections:
 - [digital_costas_loop_cc_0, '3', blocks_null_sink_1, '0']
 - [digital_crc32_bb_0_0_0_0, '0', blocks_char_to_float_0, '0']
 - [digital_crc32_bb_0_0_0_0, '0', blocks_file_sink_0_0_0, '0']
+- [digital_crc32_bb_0_0_0_0, '0', epy_block_0, '0']
 - [digital_diff_decoder_bb_0, '0', blocks_char_to_float_0_0, '0']
 - [digital_diff_decoder_bb_0, '0', blocks_unpack_k_bits_bb_0, '0']
 - [digital_diff_decoder_bb_0, '0', blocks_unpacked_to_packed_xx_0, '0']
