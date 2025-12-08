@@ -12,6 +12,7 @@ from PyQt5 import Qt
 from gnuradio import qtgui
 from PyQt5 import QtCore
 from gnuradio import blocks
+import pmt
 from gnuradio import digital
 from gnuradio import gr
 from gnuradio.filter import firdes
@@ -23,7 +24,6 @@ from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio import iio
-from gnuradio import network
 import math
 import numpy
 import sip
@@ -76,7 +76,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.packet_length = packet_length = packet_groups*ts_packet_size
         self.bps = bps = constellation.bits_per_symbol()
         self.access_key = access_key = '11100001010110101110100010010011'
-        self.video_file = video_file = "./video.ts"
+        self.video_file = video_file = "./test_video/mp4sample.ts"
         self.tx_attenuation = tx_attenuation = 10
         self.sps = sps = 16
         self.samp_rate = samp_rate = int(1e6)
@@ -236,7 +236,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self._out_frame_sync_cols_range = qtgui.Range(0, 40000, 1, (packet_length+12), 200)
         self._out_frame_sync_cols_win = qtgui.RangeWidget(self._out_frame_sync_cols_range, self.set_out_frame_sync_cols, "'out_frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._out_frame_sync_cols_win)
-        self.network_udp_source_0 = network.udp_source(gr.sizeof_char, 1, 5000, 0, packet_length, False, False, False)
         self.iio_pluto_sink_0_0_0 = iio.fmcomms2_sink_fc32('192.168.2.1' if '192.168.2.1' else iio.get_pluto_uri(), [True, True], 32768, False)
         self.iio_pluto_sink_0_0_0.set_len_tag_key('')
         self.iio_pluto_sink_0_0_0.set_bandwidth(int(samp_rate))
@@ -259,11 +258,14 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.blocks_stream_to_tagged_stream_0_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_length, "packet_len")
         self.blocks_packed_to_unpacked_xx_0 = blocks.packed_to_unpacked_bb(1, gr.GR_MSB_FIRST)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(0.3)
+        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, video_file, True, 0, 0)
+        self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
 
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.blocks_file_source_0_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.iio_pluto_sink_0_0_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.qtgui_time_sink_x_0_1, 0))
         self.connect((self.blocks_packed_to_unpacked_xx_0, 0), (self.qtgui_time_raster_sink_x_0_0, 0))
@@ -275,7 +277,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_crc32_bb_0, 0), (self.blocks_tagged_stream_mux_0, 1))
         self.connect((self.digital_crc32_bb_0, 0), (self.digital_protocol_formatter_bb_0, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_tagged_stream_mux_0, 0))
-        self.connect((self.network_udp_source_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
 
 
     def closeEvent(self, event):
@@ -341,6 +342,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
 
     def set_video_file(self, video_file):
         self.video_file = video_file
+        self.blocks_file_source_0_0.open(self.video_file, True)
 
     def get_tx_attenuation(self):
         return self.tx_attenuation

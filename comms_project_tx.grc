@@ -325,6 +325,18 @@ blocks:
     bus_structure: null
     coordinate: [80, 268.0]
     rotation: 0
+    state: disabled
+- name: video_file
+  id: variable
+  parameters:
+    comment: ''
+    value: '"./test_video/mp4sample.ts"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [192, 268.0]
+    rotation: 0
     state: enabled
 - name: blocks_file_source_0_0
   id: blocks_file_source
