@@ -1,0 +1,1 @@
+rpicam-vid --inline --vflip --hflip -n -t 0 --framerate 15 --bitrate 400000 --width 1920 --height 1080 --codec libav --libav-format avi -o udp://127.0.0.1:5000
