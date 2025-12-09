@@ -12,9 +12,7 @@ from PyQt5 import Qt
 from gnuradio import qtgui
 from PyQt5 import QtCore
 from gnuradio import blocks
-import pmt
 from gnuradio import digital
-from gnuradio import fec
 from gnuradio import gr
 from gnuradio.filter import firdes
 from gnuradio.fft import window
@@ -25,6 +23,7 @@ from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio import iio
+from gnuradio import network
 import math
 import numpy
 import sip
@@ -34,7 +33,7 @@ import threading
 
 class comms_project_tx(gr.top_block, Qt.QWidget):
 
-    def __init__(self, puncpat='11'):
+    def __init__(self):
         gr.top_block.__init__(self, "Packetized MPEG Transmitter", catch_exceptions=True)
         Qt.QWidget.__init__(self)
         self.setWindowTitle("Packetized MPEG Transmitter")
@@ -66,37 +65,26 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.flowgraph_started = threading.Event()
 
         ##################################################
-        # Parameters
-        ##################################################
-        self.puncpat = puncpat
-
-        ##################################################
         # Variables
         ##################################################
         self.ts_packet_size = ts_packet_size = 188
         self.packet_groups = packet_groups = 1
-        self.packet_length = packet_length = packet_groups*ts_packet_size
-        self.crc_size = crc_size = 4
-        self.packet_and_crc = packet_and_crc = packet_length+crc_size
         self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
         4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
         self.constellation.set_npwr(1.0)
         self.thresh = thresh = 0
-        self.rate = rate = 2
-        self.polys = polys = [109, 79]
-        self.k = k = 7
-        self.frame_size = frame_size = packet_and_crc
+        self.packet_length = packet_length = packet_groups*ts_packet_size
+        self.crc_size = crc_size = 4
         self.bps = bps = constellation.bits_per_symbol()
         self.access_key = access_key = '11100001010110101110100010010011'
         self.video_file = video_file = "./test_video/mp4sample.ts"
         self.tx_attenuation = tx_attenuation = 0
         self.sps = sps = 16
-        self.samp_rate = samp_rate = int(1e6)
+        self.samp_rate = samp_rate = int(4e6)
         self.raw_data_sync = raw_data_sync = 188
+        self.packet_and_crc = packet_and_crc = packet_length+crc_size
         self.hdr_format = hdr_format = digital.header_format_default(access_key, thresh, bps)
         self.frame_sync_cols = frame_sync_cols = 392
-        self.enc_cc = enc_cc = fec.cc_encoder_make((frame_size*8),k, rate, polys, 0, fec.CC_STREAMING, False)
-        self.dec_cc = dec_cc = fec.cc_decoder.make((frame_size*8),k, rate, polys, 0, (-1), fec.CC_STREAMING, False)
         self.center_freq = center_freq = 915e6
         self.alpha = alpha = 0.45
 
@@ -161,102 +149,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_1_1_2_win = sip.wrapinstance(self.qtgui_time_sink_x_1_1_2.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_1_1_2_win)
-        self.qtgui_time_sink_x_1_1_1 = qtgui.time_sink_f(
-            1024, #size
-            samp_rate, #samp_rate
-            "TX Payload No FEC Yes CRC", #name
-            1, #number of inputs
-            None # parent
-        )
-        self.qtgui_time_sink_x_1_1_1.set_update_time(0.10)
-        self.qtgui_time_sink_x_1_1_1.set_y_axis(0, 256)
-
-        self.qtgui_time_sink_x_1_1_1.set_y_label('Amplitude', "")
-
-        self.qtgui_time_sink_x_1_1_1.enable_tags(True)
-        self.qtgui_time_sink_x_1_1_1.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_1_1_1.enable_autoscale(False)
-        self.qtgui_time_sink_x_1_1_1.enable_grid(False)
-        self.qtgui_time_sink_x_1_1_1.enable_axis_labels(True)
-        self.qtgui_time_sink_x_1_1_1.enable_control_panel(False)
-        self.qtgui_time_sink_x_1_1_1.enable_stem_plot(False)
-
-
-        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
-            'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
-        widths = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        colors = ['blue', 'red', 'green', 'black', 'cyan',
-            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-        styles = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        markers = [-1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1]
-
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_1_1_1.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_sink_x_1_1_1.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_1_1_1.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_1_1_1.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_1_1_1.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_1_1_1.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_1_1_1.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_sink_x_1_1_1_win = sip.wrapinstance(self.qtgui_time_sink_x_1_1_1.qwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_sink_x_1_1_1_win)
-        self.qtgui_time_sink_x_1_1 = qtgui.time_sink_f(
-            1024, #size
-            samp_rate, #samp_rate
-            "TX Payload with FEC", #name
-            1, #number of inputs
-            None # parent
-        )
-        self.qtgui_time_sink_x_1_1.set_update_time(0.10)
-        self.qtgui_time_sink_x_1_1.set_y_axis(0, 256)
-
-        self.qtgui_time_sink_x_1_1.set_y_label('Amplitude', "")
-
-        self.qtgui_time_sink_x_1_1.enable_tags(True)
-        self.qtgui_time_sink_x_1_1.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_1_1.enable_autoscale(False)
-        self.qtgui_time_sink_x_1_1.enable_grid(False)
-        self.qtgui_time_sink_x_1_1.enable_axis_labels(True)
-        self.qtgui_time_sink_x_1_1.enable_control_panel(False)
-        self.qtgui_time_sink_x_1_1.enable_stem_plot(False)
-
-
-        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
-            'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
-        widths = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        colors = ['blue', 'red', 'green', 'black', 'cyan',
-            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-        styles = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        markers = [-1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1]
-
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_1_1.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_sink_x_1_1.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_1_1.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_1_1.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_1_1.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_1_1.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_1_1.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_sink_x_1_1_win = sip.wrapinstance(self.qtgui_time_sink_x_1_1.qwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_sink_x_1_1_win)
         self.qtgui_time_sink_x_0_1 = qtgui.time_sink_c(
             1024, #size
             samp_rate, #samp_rate
@@ -490,6 +382,7 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 1):
             self.top_grid_layout.setColumnStretch(c, 1)
+        self.network_udp_source_0 = network.udp_source(gr.sizeof_char, 1, 5000, 0, packet_length, False, False, False)
         self.iio_pluto_sink_0_0_0 = iio.fmcomms2_sink_fc32('192.168.2.1' if '192.168.2.1' else iio.get_pluto_uri(), [True, True], 32768, False)
         self.iio_pluto_sink_0_0_0.set_len_tag_key('')
         self.iio_pluto_sink_0_0_0.set_bandwidth(int(samp_rate))
@@ -497,7 +390,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.iio_pluto_sink_0_0_0.set_samplerate(int(samp_rate))
         self.iio_pluto_sink_0_0_0.set_attenuation(0, tx_attenuation)
         self.iio_pluto_sink_0_0_0.set_filter_params('Auto', '', 0, 0)
-        self.fec_extended_tagged_encoder_0_0 = fec.extended_tagged_encoder(encoder_obj_list=enc_cc, puncpat='11', lentagname="packet_len", mtu=1000)
         self.digital_protocol_formatter_bb_0_0 = digital.protocol_formatter_bb(hdr_format, "packet_len")
         self.digital_crc32_bb_0_0 = digital.crc32_bb(False, "packet_len", True)
         self.digital_constellation_modulator_0_0 = digital.generic_mod(
@@ -510,31 +402,20 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
             log=False,
             truncate=False)
         self.blocks_uchar_to_float_1_1_2 = blocks.uchar_to_float()
-        self.blocks_uchar_to_float_1_1_1 = blocks.uchar_to_float()
-        self.blocks_uchar_to_float_1_1 = blocks.uchar_to_float()
         self.blocks_uchar_to_float_0_0_0 = blocks.uchar_to_float()
         self.blocks_uchar_to_float_0 = blocks.uchar_to_float()
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_char*1, "packet_len", 0)
         self.blocks_stream_to_tagged_stream_0_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_length, "packet_len")
-        self.blocks_repack_bits_bb_1_0_0_0_0_0_0 = blocks.repack_bits_bb(1, 8, "packet_len", False, gr.GR_MSB_FIRST)
-        self.blocks_repack_bits_bb_1_0_0_0_0_0 = blocks.repack_bits_bb(8, 1, "packet_len", False, gr.GR_MSB_FIRST)
         self.blocks_packed_to_unpacked_xx_0 = blocks.packed_to_unpacked_bb(1, gr.GR_MSB_FIRST)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(0.3)
-        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, video_file, True, 0, 0)
-        self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_file_source_0_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.iio_pluto_sink_0_0_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.qtgui_time_sink_x_0_1, 0))
         self.connect((self.blocks_packed_to_unpacked_xx_0, 0), (self.qtgui_time_raster_sink_x_0_0, 0))
-        self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0, 0), (self.fec_extended_tagged_encoder_0_0, 0))
-        self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))
-        self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0), (self.blocks_uchar_to_float_1_1, 0))
-        self.connect((self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0), (self.digital_protocol_formatter_bb_0_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.blocks_uchar_to_float_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0_0, 0), (self.digital_crc32_bb_0_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.blocks_packed_to_unpacked_xx_0, 0))
@@ -544,14 +425,12 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.qtgui_time_raster_sink_x_0_1_0_0_0_0, 0))
         self.connect((self.blocks_uchar_to_float_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.blocks_uchar_to_float_0_0_0, 0), (self.qtgui_time_sink_x_0_0_0, 0))
-        self.connect((self.blocks_uchar_to_float_1_1, 0), (self.qtgui_time_sink_x_1_1, 0))
-        self.connect((self.blocks_uchar_to_float_1_1_1, 0), (self.qtgui_time_sink_x_1_1_1, 0))
         self.connect((self.blocks_uchar_to_float_1_1_2, 0), (self.qtgui_time_sink_x_1_1_2, 0))
         self.connect((self.digital_constellation_modulator_0_0, 0), (self.blocks_multiply_const_vxx_0, 0))
-        self.connect((self.digital_crc32_bb_0_0, 0), (self.blocks_repack_bits_bb_1_0_0_0_0_0, 0))
-        self.connect((self.digital_crc32_bb_0_0, 0), (self.blocks_uchar_to_float_1_1_1, 0))
+        self.connect((self.digital_crc32_bb_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))
+        self.connect((self.digital_crc32_bb_0_0, 0), (self.digital_protocol_formatter_bb_0_0, 0))
         self.connect((self.digital_protocol_formatter_bb_0_0, 0), (self.blocks_tagged_stream_mux_0, 0))
-        self.connect((self.fec_extended_tagged_encoder_0_0, 0), (self.blocks_repack_bits_bb_1_0_0_0_0_0_0, 0))
+        self.connect((self.network_udp_source_0, 0), (self.blocks_stream_to_tagged_stream_0_0, 0))
 
 
     def closeEvent(self, event):
@@ -561,12 +440,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.wait()
 
         event.accept()
-
-    def get_puncpat(self):
-        return self.puncpat
-
-    def set_puncpat(self, puncpat):
-        self.puncpat = puncpat
 
     def get_ts_packet_size(self):
         return self.ts_packet_size
@@ -581,6 +454,19 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
     def set_packet_groups(self, packet_groups):
         self.packet_groups = packet_groups
         self.set_packet_length(self.packet_groups*self.ts_packet_size)
+
+    def get_constellation(self):
+        return self.constellation
+
+    def set_constellation(self, constellation):
+        self.constellation = constellation
+
+    def get_thresh(self):
+        return self.thresh
+
+    def set_thresh(self, thresh):
+        self.thresh = thresh
+        self.set_hdr_format(digital.header_format_default(self.access_key, self.thresh, self.bps))
 
     def get_packet_length(self):
         return self.packet_length
@@ -597,50 +483,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
     def set_crc_size(self, crc_size):
         self.crc_size = crc_size
         self.set_packet_and_crc(self.packet_length+self.crc_size)
-
-    def get_packet_and_crc(self):
-        return self.packet_and_crc
-
-    def set_packet_and_crc(self, packet_and_crc):
-        self.packet_and_crc = packet_and_crc
-        self.set_frame_size(self.packet_and_crc)
-
-    def get_constellation(self):
-        return self.constellation
-
-    def set_constellation(self, constellation):
-        self.constellation = constellation
-
-    def get_thresh(self):
-        return self.thresh
-
-    def set_thresh(self, thresh):
-        self.thresh = thresh
-        self.set_hdr_format(digital.header_format_default(self.access_key, self.thresh, self.bps))
-
-    def get_rate(self):
-        return self.rate
-
-    def set_rate(self, rate):
-        self.rate = rate
-
-    def get_polys(self):
-        return self.polys
-
-    def set_polys(self, polys):
-        self.polys = polys
-
-    def get_k(self):
-        return self.k
-
-    def set_k(self, k):
-        self.k = k
-
-    def get_frame_size(self):
-        return self.frame_size
-
-    def set_frame_size(self, frame_size):
-        self.frame_size = frame_size
 
     def get_bps(self):
         return self.bps
@@ -661,7 +503,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
 
     def set_video_file(self, video_file):
         self.video_file = video_file
-        self.blocks_file_source_0_0.open(self.video_file, True)
 
     def get_tx_attenuation(self):
         return self.tx_attenuation
@@ -686,8 +527,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_0_0_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_0_1.set_samp_rate(self.samp_rate)
-        self.qtgui_time_sink_x_1_1.set_samp_rate(self.samp_rate)
-        self.qtgui_time_sink_x_1_1_1.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_1_1_2.set_samp_rate(self.samp_rate)
 
     def get_raw_data_sync(self):
@@ -695,6 +534,12 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
 
     def set_raw_data_sync(self, raw_data_sync):
         self.raw_data_sync = raw_data_sync
+
+    def get_packet_and_crc(self):
+        return self.packet_and_crc
+
+    def set_packet_and_crc(self, packet_and_crc):
+        self.packet_and_crc = packet_and_crc
 
     def get_hdr_format(self):
         return self.hdr_format
@@ -711,18 +556,6 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
         self.qtgui_time_raster_sink_x_0_0.set_num_cols((self.frame_sync_cols*8))
         self.qtgui_time_raster_sink_x_0_1_0_0_0_0.set_num_cols(self.frame_sync_cols)
 
-    def get_enc_cc(self):
-        return self.enc_cc
-
-    def set_enc_cc(self, enc_cc):
-        self.enc_cc = enc_cc
-
-    def get_dec_cc(self):
-        return self.dec_cc
-
-    def set_dec_cc(self, dec_cc):
-        self.dec_cc = dec_cc
-
     def get_center_freq(self):
         return self.center_freq
 
@@ -738,14 +571,8 @@ class comms_project_tx(gr.top_block, Qt.QWidget):
 
 
 
-def argument_parser():
-    parser = ArgumentParser()
-    return parser
-
 
 def main(top_block_cls=comms_project_tx, options=None):
-    if options is None:
-        options = argument_parser().parse_args()
 
     qapp = Qt.QApplication(sys.argv)
 
