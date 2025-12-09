@@ -480,7 +480,7 @@ blocks:
     bus_structure: null
     coordinate: [64, 428.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_multiply_const_vxx_0
   id: blocks_multiply_const_vxx
   parameters:
@@ -729,7 +729,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [72, 636.0]
+    coordinate: [69, 565]
     rotation: 0
     state: disabled
 - name: blocks_vector_source_x_0_0
@@ -749,7 +749,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 740.0]
+    coordinate: [61, 669]
     rotation: 0
     state: disabled
 - name: digital_constellation_modulator_0_0
@@ -880,6 +880,29 @@ blocks:
     coordinate: [1080, 12.0]
     rotation: 0
     state: true
+- name: network_udp_source_0
+  id: network_udp_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    header: '0'
+    ipv6: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    notify_missed: 'False'
+    payloadsize: packet_length
+    port: '5000'
+    src_zeros: 'False'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [63, 762]
+    rotation: 0
+    state: enabled
 - name: puncpat
   id: parameter
   parameters:
@@ -1739,6 +1762,7 @@ connections:
 - [digital_crc32_bb_0_0, '0', virtual_sink_0, '0']
 - [digital_protocol_formatter_bb_0_0, '0', virtual_sink_0_0_0, '0']
 - [fec_extended_tagged_encoder_0_0, '0', blocks_repack_bits_bb_1_0_0_0_0_0_0, '0']
+- [network_udp_source_0, '0', blocks_stream_to_tagged_stream_0_0, '0']
 - [virtual_source_0_0_0, '0', blocks_packed_to_unpacked_xx_0, '0']
 - [virtual_source_0_0_0, '0', blocks_uchar_to_float_0_0_0, '0']
 - [virtual_source_0_0_0, '0', digital_constellation_modulator_0_0, '0']
