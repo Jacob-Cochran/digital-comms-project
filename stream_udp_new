@@ -1,0 +1,19 @@
+#!/bin/bash
+
+PKT_SIZE=188
+
+rpicam-vid \
+  --inline --vflip --hflip \
+  -n -t 0 \
+  --framerate 15 \
+  --bitrate 400000 \
+  --width 1920 --height 1080 \
+  --codec h264 \
+  -o - \
+| ffmpeg -re -f h264 -i - \
+    -c:v copy \
+    -f mpegts \
+    -muxrate 800k -maxrate 800k -bufsize 800k \
+    -mpegts_flags resend_headers \
+    -pkt_size $PKT_SIZE \
+    udp://127.0.0.1:5000?pkt_size=$PKT_SIZE
