@@ -6,7 +6,7 @@ rpicam-vid \
   --inline --vflip --hflip \
   -n -t 0 \
   --framerate 10 \
-  --bitrate 445000 \
+  --bitrate 222500 \
   --width 1080 --height 720 \
   --libav-format mpegts \
   -o udp://127.0.0.1:5000

@@ -51,7 +51,7 @@ blocks:
     comment: 'Can''t change alpha in real time
 
       for Consteallation Modulator'
-    value: '0.45'
+    value: '0.99'
   states:
     bus_sink: false
     bus_source: false
@@ -194,7 +194,7 @@ blocks:
     start: '0'
     step: '1'
     stop: '2000'
-    value: '392'
+    value: '200'
     widget: counter_slider
   states:
     bus_sink: false
@@ -278,7 +278,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: int(4e6)
+    value: int(4.5e6)
   states:
     bus_sink: false
     bus_source: false
@@ -395,7 +395,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    const: '0.3'
+    const: '0.6'
     maxoutbuf: '0'
     minoutbuf: '0'
     type: complex
