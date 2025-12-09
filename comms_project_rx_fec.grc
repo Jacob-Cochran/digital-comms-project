@@ -304,6 +304,50 @@ blocks:
     coordinate: [1425, 83]
     rotation: 0
     state: true
+- name: dec_cc
+  id: variable_cc_decoder_def
+  parameters:
+    comment: ''
+    dim1: '4'
+    dim2: '4'
+    framebits: frame_size*8
+    k: k
+    mode: fec.CC_STREAMING
+    ndim: '0'
+    padding: 'False'
+    polys: polys
+    rate: rate
+    state_end: '-1'
+    state_start: '0'
+    value: '"ok"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2255, 13]
+    rotation: 0
+    state: enabled
+- name: enc_cc
+  id: variable_cc_encoder_def
+  parameters:
+    comment: ''
+    dim1: '4'
+    dim2: '1'
+    framebits: frame_size*8
+    k: k
+    mode: fec.CC_STREAMING
+    ndim: '0'
+    padding: 'False'
+    polys: polys
+    rate: rate
+    state_start: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2055, 18]
+    rotation: 0
+    state: enabled
 - name: frame_size
   id: variable
   parameters:
@@ -350,6 +394,30 @@ blocks:
     coordinate: [264, 348.0]
     rotation: 0
     state: enabled
+- name: k
+  id: variable
+  parameters:
+    comment: 1/2
+    value: '7'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1869, 19]
+    rotation: 0
+    state: enabled
+- name: k
+  id: variable
+  parameters:
+    comment: ''
+    value: '5'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1869, 206]
+    rotation: 0
+    state: disabled
 - name: nfilts
   id: variable
   parameters:
@@ -400,6 +468,42 @@ blocks:
     coordinate: [1272, 84.0]
     rotation: 0
     state: true
+- name: polys
+  id: variable
+  parameters:
+    comment: 1/2
+    value: '[109, 79]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1776, 18]
+    rotation: 0
+    state: enabled
+- name: polys
+  id: variable
+  parameters:
+    comment: ''
+    value: '[25, 27]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1779, 207]
+    rotation: 0
+    state: disabled
+- name: rate
+  id: variable
+  parameters:
+    comment: ''
+    value: len(polys)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1949, 113]
+    rotation: 0
+    state: enabled
 - name: rcc_taps
   id: variable_rrc_filter_taps
   parameters:
@@ -527,6 +631,23 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [216, 724.0]
+    rotation: 0
+    state: enabled
+- name: blocks_char_to_float_1
+  id: blocks_char_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    scale: '1'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1360, 1920]
     rotation: 0
     state: enabled
 - name: blocks_file_sink_0_0_0
@@ -985,6 +1106,22 @@ blocks:
     coordinate: [760, 624.0]
     rotation: 0
     state: enabled
+- name: digital_map_bb_0
+  id: digital_map_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    map: '[-1, 1]'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1216, 1920]
+    rotation: 0
+    state: enabled
 - name: digital_symbol_sync_xx_0
   id: digital_symbol_sync_xx
   parameters:
@@ -1013,6 +1150,27 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [776, 900.0]
+    rotation: 0
+    state: enabled
+- name: fec_extended_tagged_decoder_0
+  id: fec_extended_tagged_decoder
+  parameters:
+    affinity: ''
+    alias: ''
+    ann: None
+    comment: ''
+    decoder_list: dec_cc
+    lentagname: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mtu: '1000'
+    puncpat: '''11'''
+    value: fec_extended_decoder
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1536, 1888]
     rotation: 0
     state: enabled
 - name: iio_pluto_source_0
@@ -1072,6 +1230,23 @@ blocks:
     coordinate: [1080, 12.0]
     rotation: 0
     state: true
+- name: puncpat
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: ''
+    short_id: ''
+    type: ''
+    value: '''11'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1864, 115]
+    rotation: 0
+    state: enabled
 - name: qtgui_const_sink_x_1_0
   id: qtgui_const_sink_x
   parameters:
@@ -2461,6 +2636,7 @@ blocks:
 connections:
 - [analog_agc_xx_0, '0', digital_fll_band_edge_cc_0, '0']
 - [analog_sig_source_x_0, '0', blocks_multiply_xx_0, '1']
+- [blocks_char_to_float_1, '0', fec_extended_tagged_decoder_0, '0']
 - [blocks_multiply_xx_0, '0', analog_agc_xx_0, '0']
 - [blocks_multiply_xx_0, '0', qtgui_freq_sink_x_0, '1']
 - [blocks_repack_bits_bb_0_2, '0', blocks_uchar_to_float_1_0, '0']
@@ -2483,13 +2659,13 @@ connections:
 - [blocks_unpacked_to_packed_xx_0_1, '0', blocks_uchar_to_float_0_0_1_0_0_1, '0']
 - [blocks_unpacked_to_packed_xx_0_1, '0', virtual_sink_1_0_3, '0']
 - [digital_constellation_decoder_cb_0, '0', digital_diff_decoder_bb_0_0, '0']
-- [digital_correlate_access_code_xx_ts_0_0_0, '0', blocks_repack_bits_bb_0_2, '0']
 - [digital_correlate_access_code_xx_ts_0_0_0, '0', blocks_repack_bits_bb_1_0_0_0_0,
   '0']
 - [digital_correlate_access_code_xx_ts_0_0_0, '0', blocks_repack_bits_bb_1_0_0_0_0_1,
   '0']
 - [digital_correlate_access_code_xx_ts_0_0_0, '0', blocks_uchar_to_float_0_0_0_0_0,
   '0']
+- [digital_correlate_access_code_xx_ts_0_0_0, '0', digital_map_bb_0, '0']
 - [digital_correlate_access_code_xx_ts_0_0_0, '0', qtgui_time_raster_sink_x_0_1_0_0_1,
   '0']
 - [digital_costas_loop_cc_0, '0', digital_constellation_decoder_cb_0, '0']
@@ -2506,11 +2682,13 @@ connections:
 - [digital_diff_decoder_bb_0_0, '0', blocks_unpacked_to_packed_xx_0_1, '0']
 - [digital_fll_band_edge_cc_0, '0', blocks_skiphead_0_0, '0']
 - [digital_fll_band_edge_cc_0, '0', qtgui_freq_sink_x_0, '2']
+- [digital_map_bb_0, '0', blocks_char_to_float_1, '0']
 - [digital_symbol_sync_xx_0, '0', digital_costas_loop_cc_0, '0']
 - [digital_symbol_sync_xx_0, '0', qtgui_const_sink_x_1_0, '0']
 - [digital_symbol_sync_xx_0, '1', blocks_null_sink_0_1, '0']
 - [digital_symbol_sync_xx_0, '2', qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, '0']
 - [digital_symbol_sync_xx_0, '3', qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, '1']
+- [fec_extended_tagged_decoder_0, '0', blocks_repack_bits_bb_0_2, '0']
 - [iio_pluto_source_0, '0', blocks_multiply_xx_0, '0']
 - [iio_pluto_source_0, '0', qtgui_freq_sink_x_0, '0']
 - [iio_pluto_source_0, '0', qtgui_waterfall_sink_x_0, '0']
