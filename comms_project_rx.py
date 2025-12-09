@@ -15,7 +15,6 @@ from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import digital
 from gnuradio import filter
-from gnuradio import fec
 from gnuradio import gr
 from gnuradio.filter import firdes
 from gnuradio.fft import window
@@ -35,7 +34,7 @@ import threading
 
 class comms_project_rx(gr.top_block, Qt.QWidget):
 
-    def __init__(self, puncpat='11'):
+    def __init__(self):
         gr.top_block.__init__(self, "Packetized MPEG Receiver", catch_exceptions=True)
         Qt.QWidget.__init__(self)
         self.setWindowTitle("Packetized MPEG Receiver")
@@ -67,38 +66,28 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.flowgraph_started = threading.Event()
 
         ##################################################
-        # Parameters
-        ##################################################
-        self.puncpat = puncpat
-
-        ##################################################
         # Variables
         ##################################################
         self.ts_packet_size = ts_packet_size = 188
         self.packet_groups = packet_groups = 1
         self.packet_length = packet_length = packet_groups*ts_packet_size
         self.crc_size = crc_size = 4
-        self.polys = polys = [109, 79]
-        self.packet_and_crc = packet_and_crc = packet_length+crc_size
         self.constellation = constellation = digital.constellation_calcdist([-1-1j, -1+1j, 1+1j, 1-1j], [0, 1, 2, 3],
         4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
         self.constellation.set_npwr(1.0)
         self.thresh = thresh = 1
         self.sps = sps = 16
         self.samp_rate = samp_rate = int(4e6)
-        self.rate = rate = len(polys)
+        self.packet_and_crc = packet_and_crc = packet_length+crc_size
         self.nfilts = nfilts = 32
-        self.k = k = 7
-        self.frame_size = frame_size = packet_and_crc
         self.bps = bps = constellation.bits_per_symbol()
         self.alpha = alpha = 0.99
         self.access_key = access_key = '11100001010110101110100010010011'
         self.timing_error_loop_bandwith = timing_error_loop_bandwith = 0.045
         self.rcc_taps = rcc_taps = firdes.root_raised_cosine(nfilts, nfilts*samp_rate,samp_rate/sps, alpha, (11*sps*nfilts))
         self.hdr_format = hdr_format = digital.header_format_default(access_key, thresh, bps)
-        self.frame_sync_cols = frame_sync_cols = 392
-        self.enc_cc = enc_cc = fec.cc_encoder_make((frame_size*8),k, rate, polys, 0, fec.CC_STREAMING, False)
-        self.dec_cc = dec_cc = fec.cc_decoder.make((frame_size*8),k, rate, polys, 0, (-1), fec.CC_STREAMING, False)
+        self.frame_sync_cols = frame_sync_cols = 200
+        self.frame_size = frame_size = packet_and_crc
         self.costas_loop_bandwidth_in_cycles_per_sample = costas_loop_bandwidth_in_cycles_per_sample = 0.01
         self.cfo_offset = cfo_offset = 0
         self.center_freq = center_freq = 915e6
@@ -514,16 +503,15 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.iio_pluto_source_0.set_len_tag_key('')
         self.iio_pluto_source_0.set_frequency(int(center_freq))
         self.iio_pluto_source_0.set_samplerate(int(samp_rate))
-        self.iio_pluto_source_0.set_gain_mode(0, 'slow_attack')
+        self.iio_pluto_source_0.set_gain_mode(0, 'fast_attack')
         self.iio_pluto_source_0.set_gain(0, 64)
         self.iio_pluto_source_0.set_quadrature(True)
         self.iio_pluto_source_0.set_rfdc(True)
         self.iio_pluto_source_0.set_bbdc(True)
         self.iio_pluto_source_0.set_filter_params('Auto', '', 0, 0)
-        self._frame_sync_cols_range = qtgui.Range(0, 1600, 1, 392, 200)
+        self._frame_sync_cols_range = qtgui.Range(0, 1600, 1, 200, 200)
         self._frame_sync_cols_win = qtgui.RangeWidget(self._frame_sync_cols_range, self.set_frame_sync_cols, "'frame_sync_cols'", "counter_slider", int, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._frame_sync_cols_win)
-        self.fec_extended_tagged_decoder_0 = self.fec_extended_tagged_decoder_0 = fec_extended_tagged_decoder_0 = fec.extended_tagged_decoder(decoder_obj_list=dec_cc, ann=None, puncpat='11', integration_period=10000, lentagname="packet_len", mtu=1000)
         self.digital_symbol_sync_xx_0 = digital.symbol_sync_cc(
             digital.TED_SIGNAL_TIMES_SLOPE_ML,
             sps,
@@ -536,7 +524,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
             digital.IR_PFB_MF,
             nfilts,
             rcc_taps)
-        self.digital_map_bb_0 = digital.map_bb([-1, 1])
         self.digital_fll_band_edge_cc_0 = digital.fll_band_edge_cc(sps, alpha, (sps*2+1), (2*math.pi/sps/100/sps))
         self.digital_diff_decoder_bb_0_0 = digital.diff_decoder_bb(constellation.arity(), digital.DIFF_DIFFERENTIAL)
         self.digital_crc32_bb_0_0_0_0 = digital.crc32_bb(True, "packet_len", True)
@@ -560,7 +547,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
         self.blocks_file_sink_0_0_0 = blocks.file_sink(gr.sizeof_char*1, '/tmp/test.ts', False)
         self.blocks_file_sink_0_0_0.set_unbuffered(False)
-        self.blocks_char_to_float_1 = blocks.char_to_float(1, 1)
         self.analog_sig_source_x_0 = analog.sig_source_c(samp_rate, analog.GR_COS_WAVE, cfo_offset, 1, 0, 0)
         self.analog_agc_xx_0 = analog.agc_cc(agc_rate, 1.0, 1.0, 65536)
 
@@ -570,7 +556,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         ##################################################
         self.connect((self.analog_agc_xx_0, 0), (self.digital_fll_band_edge_cc_0, 0))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_multiply_xx_0, 1))
-        self.connect((self.blocks_char_to_float_1, 0), (self.fec_extended_tagged_decoder_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.analog_agc_xx_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.qtgui_freq_sink_x_0, 1))
         self.connect((self.blocks_repack_bits_bb_0_2, 0), (self.blocks_uchar_to_float_1_0, 0))
@@ -585,8 +570,8 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_unpacked_to_packed_xx_0_1, 0), (self.blocks_repack_bits_bb_1_0_1, 0))
         self.connect((self.blocks_unpacked_to_packed_xx_0_1, 0), (self.blocks_uchar_to_float_0_0_1_0_0_1, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_diff_decoder_bb_0_0, 0))
+        self.connect((self.digital_correlate_access_code_xx_ts_0_0_0, 0), (self.blocks_repack_bits_bb_0_2, 0))
         self.connect((self.digital_correlate_access_code_xx_ts_0_0_0, 0), (self.blocks_repack_bits_bb_1_0_0_0_0_1, 0))
-        self.connect((self.digital_correlate_access_code_xx_ts_0_0_0, 0), (self.digital_map_bb_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 3), (self.blocks_null_sink_1, 0))
         self.connect((self.digital_costas_loop_cc_0, 1), (self.blocks_null_sink_2, 0))
         self.connect((self.digital_costas_loop_cc_0, 2), (self.blocks_null_sink_3, 0))
@@ -597,13 +582,11 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_diff_decoder_bb_0_0, 0), (self.blocks_unpacked_to_packed_xx_0_1, 0))
         self.connect((self.digital_fll_band_edge_cc_0, 0), (self.blocks_skiphead_0_0, 0))
         self.connect((self.digital_fll_band_edge_cc_0, 0), (self.qtgui_freq_sink_x_0, 2))
-        self.connect((self.digital_map_bb_0, 0), (self.blocks_char_to_float_1, 0))
         self.connect((self.digital_symbol_sync_xx_0, 1), (self.blocks_null_sink_0_1, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_costas_loop_cc_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1_0, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 3), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 1))
-        self.connect((self.fec_extended_tagged_decoder_0, 0), (self.blocks_repack_bits_bb_0_2, 0))
+        self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_waterfall_sink_x_0, 0))
@@ -616,12 +599,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.wait()
 
         event.accept()
-
-    def get_puncpat(self):
-        return self.puncpat
-
-    def set_puncpat(self, puncpat):
-        self.puncpat = puncpat
 
     def get_ts_packet_size(self):
         return self.ts_packet_size
@@ -650,20 +627,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
     def set_crc_size(self, crc_size):
         self.crc_size = crc_size
         self.set_packet_and_crc(self.packet_length+self.crc_size)
-
-    def get_polys(self):
-        return self.polys
-
-    def set_polys(self, polys):
-        self.polys = polys
-        self.set_rate(len(self.polys))
-
-    def get_packet_and_crc(self):
-        return self.packet_and_crc
-
-    def set_packet_and_crc(self, packet_and_crc):
-        self.packet_and_crc = packet_and_crc
-        self.set_frame_size(self.packet_and_crc)
 
     def get_constellation(self):
         return self.constellation
@@ -705,11 +668,12 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_1_0.set_samp_rate(self.samp_rate)
         self.qtgui_waterfall_sink_x_0.set_frequency_range(self.center_freq, self.samp_rate)
 
-    def get_rate(self):
-        return self.rate
+    def get_packet_and_crc(self):
+        return self.packet_and_crc
 
-    def set_rate(self, rate):
-        self.rate = rate
+    def set_packet_and_crc(self, packet_and_crc):
+        self.packet_and_crc = packet_and_crc
+        self.set_frame_size(self.packet_and_crc)
 
     def get_nfilts(self):
         return self.nfilts
@@ -717,18 +681,6 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
     def set_nfilts(self, nfilts):
         self.nfilts = nfilts
         self.set_rcc_taps(firdes.root_raised_cosine(self.nfilts, self.nfilts*self.samp_rate, self.samp_rate/self.sps, self.alpha, (11*self.sps*self.nfilts)))
-
-    def get_k(self):
-        return self.k
-
-    def set_k(self, k):
-        self.k = k
-
-    def get_frame_size(self):
-        return self.frame_size
-
-    def set_frame_size(self, frame_size):
-        self.frame_size = frame_size
 
     def get_bps(self):
         return self.bps
@@ -776,17 +728,11 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
     def set_frame_sync_cols(self, frame_sync_cols):
         self.frame_sync_cols = frame_sync_cols
 
-    def get_enc_cc(self):
-        return self.enc_cc
+    def get_frame_size(self):
+        return self.frame_size
 
-    def set_enc_cc(self, enc_cc):
-        self.enc_cc = enc_cc
-
-    def get_dec_cc(self):
-        return self.dec_cc
-
-    def set_dec_cc(self, dec_cc):
-        self.dec_cc = dec_cc
+    def set_frame_size(self, frame_size):
+        self.frame_size = frame_size
 
     def get_costas_loop_bandwidth_in_cycles_per_sample(self):
         return self.costas_loop_bandwidth_in_cycles_per_sample
@@ -819,14 +765,8 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
 
 
 
-def argument_parser():
-    parser = ArgumentParser()
-    return parser
-
 
 def main(top_block_cls=comms_project_rx, options=None):
-    if options is None:
-        options = argument_parser().parse_args()
 
     qapp = Qt.QApplication(sys.argv)
 
