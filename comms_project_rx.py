@@ -78,7 +78,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.constellation.set_npwr(1.0)
         self.thresh = thresh = 1
         self.sps = sps = 16
-        self.samp_rate = samp_rate = int(4e6)
+        self.samp_rate = samp_rate = int(4.5e6)
         self.packet_and_crc = packet_and_crc = packet_length+crc_size
         self.nfilts = nfilts = 32
         self.bps = bps = constellation.bits_per_symbol()
@@ -506,7 +506,7 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.iio_pluto_source_0.set_frequency(int(center_freq))
         self.iio_pluto_source_0.set_samplerate(int(samp_rate))
         self.iio_pluto_source_0.set_gain_mode(0, 'fast_attack')
-        self.iio_pluto_source_0.set_gain(0, 64)
+        self.iio_pluto_source_0.set_gain(0, 100)
         self.iio_pluto_source_0.set_quadrature(True)
         self.iio_pluto_source_0.set_rfdc(True)
         self.iio_pluto_source_0.set_bbdc(True)
@@ -585,8 +585,8 @@ class comms_project_rx(gr.top_block, Qt.QWidget):
         self.connect((self.digital_symbol_sync_xx_0, 1), (self.blocks_null_sink_0_1, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_costas_loop_cc_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_const_sink_x_1_0, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 3), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 1))
         self.connect((self.digital_symbol_sync_xx_0, 2), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 0))
+        self.connect((self.digital_symbol_sync_xx_0, 3), (self.qtgui_time_sink_x_0_0_0_0_0_0_1_0_0, 1))
         self.connect((self.iio_pluto_source_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.iio_pluto_source_0, 0), (self.qtgui_waterfall_sink_x_0, 0))

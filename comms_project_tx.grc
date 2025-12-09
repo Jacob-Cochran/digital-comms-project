@@ -51,7 +51,7 @@ blocks:
     comment: 'Can''t change alpha in real time
 
       for Consteallation Modulator'
-    value: '0.45'
+    value: '0.99'
   states:
     bus_sink: false
     bus_source: false

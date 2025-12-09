@@ -525,7 +525,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: int(4e6)
+    value: int(4.5e6)
   states:
     bus_sink: false
     bus_source: false
@@ -667,7 +667,7 @@ blocks:
     bus_structure: null
     coordinate: [2171, 1728]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_multiply_xx_0
   id: blocks_multiply_xx
   parameters:
